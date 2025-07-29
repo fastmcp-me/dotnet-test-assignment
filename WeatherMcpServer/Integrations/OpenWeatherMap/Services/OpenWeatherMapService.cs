@@ -80,16 +80,6 @@ public class OpenWeatherMapService : IWeatherProvider
         {
             throw new WeatherServiceException("OpenWeatherMap API key is not configured. Please set the API key in configuration or environment variables.");
         }
-        
-        // Ensure BaseUrl ends with "/" for proper URL construction
-        var baseUrl = _configuration.BaseUrl;
-        if (!baseUrl.EndsWith("/"))
-        {
-            baseUrl += "/";
-        }
-        
-        _httpClient.BaseAddress = new Uri(baseUrl);
-        _httpClient.Timeout = TimeSpan.FromSeconds(_configuration.TimeoutSeconds);
     }
 
     private static string BuildLocationQuery(string city, string? countryCode)

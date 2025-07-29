@@ -25,11 +25,15 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Services.Configure<OpenWeatherMapConfiguration>(
     builder.Configuration.GetSection(OpenWeatherMapConfiguration.SectionName));
 
-// Register HttpClient
-builder.Services.AddSingleton<HttpClient>();
+// Configure HttpClient for OpenWeatherMap
+builder.Services.AddHttpClient<IWeatherProvider, OpenWeatherMapService>((serviceProvider, client) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IOptions<OpenWeatherMapConfiguration>>().Value;
 
-// Register weather provider
-builder.Services.AddScoped<IWeatherProvider, OpenWeatherMapService>();
+    client.BaseAddress = new Uri(configuration.BaseUrl);
+    client.Timeout = TimeSpan.FromSeconds(configuration.TimeoutSeconds);
+    client.DefaultRequestHeaders.Add("User-Agent", "WeatherMcpServer/1.0");
+});
 
 // Register formatters
 builder.Services.AddSingleton<IWeatherResponseFormatter, WeatherResponseFormatter>();
