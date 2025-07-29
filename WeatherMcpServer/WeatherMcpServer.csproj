@@ -31,6 +31,7 @@
         <PackageReference Include="MediatR" Version="12.4.1"/>
         <PackageReference Include="FluentValidation" Version="11.10.0"/>
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1"/>
     </ItemGroup>
 
 </Project>

@@ -23,4 +23,9 @@ public class WeatherServiceException : BusinessException
         : base(message, "WEATHER_SERVICE_ERROR")
     {
     }
+    
+    public WeatherServiceException(string message, Exception innerException) 
+        : base(message, "WEATHER_SERVICE_ERROR", innerException)
+    {
+    }
 }

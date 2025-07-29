@@ -4,8 +4,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WeatherMcpServer.Business.Configuration;
+using Microsoft.Extensions.Options;
 using WeatherMcpServer.Business.Infrastructure.Behaviors;
+using WeatherMcpServer.Business.Interfaces;
+using WeatherMcpServer.Integrations.OpenWeatherMap.Models;
+using WeatherMcpServer.Integrations.OpenWeatherMap.Services;
 using WeatherMcpServer.Tools;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -18,8 +21,14 @@ builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnCh
 builder.Configuration.AddEnvironmentVariables();
 
 // Configure options
-builder.Services.Configure<WeatherOptions>(
-    builder.Configuration.GetSection(WeatherOptions.SectionName));
+builder.Services.Configure<OpenWeatherMapConfiguration>(
+    builder.Configuration.GetSection(OpenWeatherMapConfiguration.SectionName));
+
+// Register HttpClient
+builder.Services.AddSingleton<HttpClient>();
+
+// Register weather provider
+builder.Services.AddScoped<IWeatherProvider, OpenWeatherMapService>();
 
 // Add MediatR
 builder.Services.AddMediatR(cfg =>
@@ -35,7 +44,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
-    .WithTools<RandomNumberTools>()
     .WithTools<WeatherTools>();
 
 await builder.Build().RunAsync();
