@@ -1,10 +1,9 @@
 using System.ComponentModel;
-using System.Text;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using WeatherMcpServer.Business.Infrastructure.Exceptions;
-using WeatherMcpServer.Business.Models;
+using WeatherMcpServer.Business.Infrastructure.Formatters;
 using WeatherMcpServer.Business.Queries.GetCurrentWeather;
 using WeatherMcpServer.Business.Queries.GetWeatherAlerts;
 using WeatherMcpServer.Business.Queries.GetWeatherForecast;
@@ -15,11 +14,16 @@ public class WeatherTools
 {
     private readonly IMediator _mediator;
     private readonly ILogger<WeatherTools> _logger;
+    private readonly IWeatherResponseFormatter _formatter;
 
-    public WeatherTools(IMediator mediator, ILogger<WeatherTools> logger)
+    public WeatherTools(
+        IMediator mediator, 
+        ILogger<WeatherTools> logger,
+        IWeatherResponseFormatter formatter)
     {
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
     }
 
     [McpServerTool]
@@ -35,7 +39,7 @@ public class WeatherTools
             var query = new GetCurrentWeatherQuery(city, countryCode);
             var weather = await _mediator.Send(query);
             
-            var result = FormatCurrentWeatherResponse(weather);
+            var result = _formatter.FormatCurrentWeather(weather);
             _logger.LogInformation("Successfully retrieved current weather for city: {City}", city);
             
             return result;
@@ -68,7 +72,7 @@ public class WeatherTools
             var query = new GetWeatherForecastQuery(city, countryCode, days);
             var forecast = await _mediator.Send(query);
             
-            var result = FormatWeatherForecastResponse(forecast);
+            var result = _formatter.FormatWeatherForecast(forecast);
             _logger.LogInformation("Successfully retrieved weather forecast for city: {City}", city);
             
             return result;
@@ -99,7 +103,7 @@ public class WeatherTools
             var query = new GetWeatherAlertsQuery(city, countryCode);
             var alerts = await _mediator.Send(query);
             
-            var result = FormatWeatherAlertsResponse(alerts);
+            var result = _formatter.FormatWeatherAlerts(alerts);
             _logger.LogInformation("Successfully retrieved weather alerts for city: {City}", city);
             
             return result;
@@ -115,75 +119,5 @@ public class WeatherTools
             _logger.LogError(ex, "Error getting weather alerts for city: {City}", city);
             throw new WeatherServiceException($"Failed to get weather alerts for {city}. Please try again later.");
         }
-    }
-
-    private static string FormatCurrentWeatherResponse(CurrentWeatherData weather)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"📍 Current Weather in {weather.City}, {weather.Country}");
-        sb.AppendLine($"🌡️ Temperature: {weather.Temperature}°C (feels like {weather.FeelsLike}°C)");
-        sb.AppendLine($"☁️ Condition: {weather.MainCondition} - {weather.Description}");
-        sb.AppendLine($"💧 Humidity: {weather.Humidity}%");
-        sb.AppendLine($"💨 Wind Speed: {weather.WindSpeed} m/s");
-        sb.AppendLine($"🔵 Pressure: {weather.Pressure} hPa");
-        sb.AppendLine($"⏰ Last Updated: {weather.Timestamp:yyyy-MM-dd HH:mm:ss}");
-        
-        return sb.ToString();
-    }
-
-    private static string FormatWeatherForecastResponse(WeatherForecastData forecast)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"📅 Weather Forecast for {forecast.City}, {forecast.Country}");
-        sb.AppendLine();
-
-        foreach (var day in forecast.DailyForecasts)
-        {
-            sb.AppendLine($"📆 {day.Date:dddd, MMMM d}");
-            sb.AppendLine($"   🌡️ Temperature: {day.Temperature}°C (Min: {day.TemperatureMin}°C, Max: {day.TemperatureMax}°C)");
-            sb.AppendLine($"   ☁️ Condition: {day.MainCondition} - {day.Description}");
-            sb.AppendLine($"   💧 Humidity: {day.Humidity}% | Precipitation: {day.PrecipitationProbability}%");
-            sb.AppendLine($"   💨 Wind Speed: {day.WindSpeed} m/s");
-            sb.AppendLine();
-        }
-
-        return sb.ToString();
-    }
-
-    private static string FormatWeatherAlertsResponse(WeatherAlertsData alerts)
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"⚠️ Weather Alerts for {alerts.City}, {alerts.Country}");
-        sb.AppendLine();
-
-        if (alerts.Alerts.Count == 0)
-        {
-            sb.AppendLine("✅ No active weather alerts for this location.");
-            sb.AppendLine();
-            sb.AppendLine("ℹ️ Note: Weather alerts require a paid API subscription.");
-        }
-        else
-        {
-            foreach (var alert in alerts.Alerts)
-            {
-                var severityIcon = alert.Severity switch
-                {
-                    AlertSeverity.Extreme => "🔴",
-                    AlertSeverity.Severe => "🟠",
-                    AlertSeverity.Moderate => "🟡",
-                    AlertSeverity.Minor => "🟢",
-                    _ => "⚪"
-                };
-
-                sb.AppendLine($"{severityIcon} {alert.Title}");
-                sb.AppendLine($"   Severity: {alert.Severity}");
-                sb.AppendLine($"   Event: {alert.Event}");
-                sb.AppendLine($"   Duration: {alert.StartTime:yyyy-MM-dd HH:mm} - {alert.EndTime:yyyy-MM-dd HH:mm}");
-                sb.AppendLine($"   Description: {alert.Description}");
-                sb.AppendLine();
-            }
-        }
-
-        return sb.ToString();
     }
 }

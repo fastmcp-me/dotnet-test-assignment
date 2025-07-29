@@ -136,7 +136,8 @@ WeatherMcpServer/
 │   ├── Configuration/          # Configuration models
 │   ├── Infrastructure/         # Cross-cutting concerns
 │   │   ├── Behaviors/         # MediatR pipeline behaviors
-│   │   └── Exceptions/        # Custom exceptions
+│   │   ├── Exceptions/        # Custom exceptions
+│   │   └── Formatters/        # Response formatting logic
 │   ├── Interfaces/            # Abstractions
 │   ├── Models/                # Domain models
 │   └── Queries/               # CQRS queries

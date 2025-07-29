@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using WeatherMcpServer.Business.Infrastructure.Behaviors;
+using WeatherMcpServer.Business.Infrastructure.Formatters;
 using WeatherMcpServer.Business.Interfaces;
 using WeatherMcpServer.Integrations.OpenWeatherMap.Models;
 using WeatherMcpServer.Integrations.OpenWeatherMap.Services;
@@ -29,6 +30,9 @@ builder.Services.AddSingleton<HttpClient>();
 
 // Register weather provider
 builder.Services.AddScoped<IWeatherProvider, OpenWeatherMapService>();
+
+// Register formatters
+builder.Services.AddSingleton<IWeatherResponseFormatter, WeatherResponseFormatter>();
 
 // Add MediatR
 builder.Services.AddMediatR(cfg =>
