@@ -1,26 +1,49 @@
 using System.ComponentModel;
+using MediatR;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
+using WeatherMcpServer.Business.Infrastructure.Exceptions;
+using WeatherMcpServer.Business.Queries.GetCityWeather;
 
 namespace WeatherMcpServer.Tools;
 
 public class WeatherTools
 {
+    private readonly IMediator _mediator;
+    private readonly ILogger<WeatherTools> _logger;
+
+    public WeatherTools(IMediator mediator, ILogger<WeatherTools> logger)
+    {
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
     [McpServerTool]
     [Description("Describes random weather in the provided city.")]
-    public string GetCityWeather(
+    public async Task<string> GetCityWeather(
         [Description("Name of the city to return weather for")] string city)
     {
-        // Read the environment variable during tool execution.
-        // Alternatively, this could be read during startup and passed via IOptions dependency injection
-        var weather = Environment.GetEnvironmentVariable("WEATHER_CHOICES");
-        if (string.IsNullOrWhiteSpace(weather))
+        try
         {
-            weather = "balmy,rainy,stormy";
+            _logger.LogInformation("Getting weather for city: {City}", city);
+            
+            var query = new GetCityWeatherQuery(city);
+            var response = await _mediator.Send(query);
+            
+            _logger.LogInformation("Successfully retrieved weather for city: {City}", city);
+            
+            return response.WeatherDescription;
         }
-
-        var weatherChoices = weather.Split(",");
-        var selectedWeatherIndex =  Random.Shared.Next(0, weatherChoices.Length);
-
-        return $"The weather in {city} is {weatherChoices[selectedWeatherIndex]}.";
+        catch (FluentValidation.ValidationException ex)
+        {
+            _logger.LogWarning(ex, "Validation failed for city: {City}", city);
+            var errors = string.Join("; ", ex.Errors.Select(e => e.ErrorMessage));
+            throw new WeatherServiceException($"Invalid request: {errors}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting weather for city: {City}", city);
+            throw new WeatherServiceException($"Failed to get weather for {city}. Please try again later.");
+        }
     }
 }
