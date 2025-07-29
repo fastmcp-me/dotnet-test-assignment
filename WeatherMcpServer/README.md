@@ -159,7 +159,7 @@ The server can be configured via `appsettings.json`:
 {
   "OpenWeatherMap": {
     "ApiKey": "",                                    // Your API key
-    "BaseUrl": "https://api.openweathermap.org/data/2.5", // API base URL
+    "BaseUrl": "https://api.openweathermap.org/data/2.5/", // API base URL
     "Units": "metric",                               // Units: metric, imperial, standard
     "TimeoutSeconds": 30                             // HTTP timeout
   },
