@@ -182,6 +182,17 @@ The server implements comprehensive error handling:
 - **Network Errors**: Timeout and connection error handling
 - **Business Logic Errors**: Custom exceptions for business rule violations
 
+### Exception Handling Architecture
+
+The server uses a centralized exception handling approach through MediatR pipeline behaviors:
+
+1. **No try-catch in Tools**: Tool methods are clean and focused on their primary responsibility
+2. **ExceptionHandlingBehavior**: All exceptions are caught and transformed in one place
+3. **Consistent Error Messages**: Users receive friendly, consistent error messages
+4. **Proper Logging**: All exceptions are logged with appropriate severity levels
+
+This approach follows the DRY principle and makes error handling maintainable and testable.
+
 ## Testing the Server
 
 You can test the server using the MCP inspector or by integrating it with Claude Desktop.

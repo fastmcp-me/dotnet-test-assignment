@@ -28,72 +28,36 @@ public class OpenWeatherMapService : IWeatherProvider
 
     public async Task<CurrentWeatherData> GetCurrentWeatherAsync(string city, string? countryCode = null, CancellationToken cancellationToken = default)
     {
-        try
+        var location = BuildLocationQuery(city, countryCode);
+        var url = $"weather?q={location}&appid={_configuration.ApiKey}&units={_configuration.Units}";
+        
+        _logger.LogInformation("Fetching current weather for {Location}", location);
+        
+        var response = await _httpClient.GetFromJsonAsync<OpenWeatherMapCurrentResponse>(url, cancellationToken);
+        
+        if (response == null)
         {
-            var location = BuildLocationQuery(city, countryCode);
-            var url = $"weather?q={location}&appid={_configuration.ApiKey}&units={_configuration.Units}";
-            
-            _logger.LogInformation("Fetching current weather for {Location}", location);
-            
-            var response = await _httpClient.GetFromJsonAsync<OpenWeatherMapCurrentResponse>(url, cancellationToken);
-            
-            if (response == null)
-            {
-                throw new WeatherServiceException($"No weather data received for {location}");
-            }
-            
-            return MapToCurrentWeatherData(response);
+            throw new WeatherServiceException($"No weather data received for {location}");
         }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "HTTP error while fetching current weather for {City}", city);
-            throw new WeatherServiceException($"Failed to fetch weather data for {city}. Please check your internet connection.", ex);
-        }
-        catch (TaskCanceledException ex)
-        {
-            _logger.LogError(ex, "Timeout while fetching current weather for {City}", city);
-            throw new WeatherServiceException($"Request timed out while fetching weather data for {city}.", ex);
-        }
-        catch (Exception ex) when (ex is not WeatherServiceException)
-        {
-            _logger.LogError(ex, "Unexpected error while fetching current weather for {City}", city);
-            throw new WeatherServiceException($"An unexpected error occurred while fetching weather data for {city}.", ex);
-        }
+        
+        return MapToCurrentWeatherData(response);
     }
 
     public async Task<WeatherForecastData> GetWeatherForecastAsync(string city, string? countryCode = null, int days = 3, CancellationToken cancellationToken = default)
     {
-        try
+        var location = BuildLocationQuery(city, countryCode);
+        var url = $"forecast?q={location}&appid={_configuration.ApiKey}&units={_configuration.Units}&cnt={days * 8}"; // 8 forecasts per day (3-hour intervals)
+        
+        _logger.LogInformation("Fetching weather forecast for {Location} for {Days} days", location, days);
+        
+        var response = await _httpClient.GetFromJsonAsync<OpenWeatherMapForecastResponse>(url, cancellationToken);
+        
+        if (response == null)
         {
-            var location = BuildLocationQuery(city, countryCode);
-            var url = $"forecast?q={location}&appid={_configuration.ApiKey}&units={_configuration.Units}&cnt={days * 8}"; // 8 forecasts per day (3-hour intervals)
-            
-            _logger.LogInformation("Fetching weather forecast for {Location} for {Days} days", location, days);
-            
-            var response = await _httpClient.GetFromJsonAsync<OpenWeatherMapForecastResponse>(url, cancellationToken);
-            
-            if (response == null)
-            {
-                throw new WeatherServiceException($"No forecast data received for {location}");
-            }
-            
-            return MapToWeatherForecastData(response, days);
+            throw new WeatherServiceException($"No forecast data received for {location}");
         }
-        catch (HttpRequestException ex)
-        {
-            _logger.LogError(ex, "HTTP error while fetching weather forecast for {City}", city);
-            throw new WeatherServiceException($"Failed to fetch forecast data for {city}. Please check your internet connection.", ex);
-        }
-        catch (TaskCanceledException ex)
-        {
-            _logger.LogError(ex, "Timeout while fetching weather forecast for {City}", city);
-            throw new WeatherServiceException($"Request timed out while fetching forecast data for {city}.", ex);
-        }
-        catch (Exception ex) when (ex is not WeatherServiceException)
-        {
-            _logger.LogError(ex, "Unexpected error while fetching weather forecast for {City}", city);
-            throw new WeatherServiceException($"An unexpected error occurred while fetching forecast data for {city}.", ex);
-        }
+        
+        return MapToWeatherForecastData(response, days);
     }
 
     public async Task<WeatherAlertsData> GetWeatherAlertsAsync(string city, string? countryCode = null, CancellationToken cancellationToken = default)
