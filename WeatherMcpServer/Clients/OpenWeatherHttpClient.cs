@@ -1,9 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
-using System.Text.Json;
-using WeatherMcpServer.Options;
-
 namespace WeatherMcpServer.Clients;
 
 public class OpenWeatherHttpClient(
