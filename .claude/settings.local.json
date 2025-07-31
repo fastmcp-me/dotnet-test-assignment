@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del:*)",
+      "Bash(rm:*)",
+      "Bash(dotnet build)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet test)",
+      "Bash(find:*)"
+    ],
+    "deny": []
+  }
+}
