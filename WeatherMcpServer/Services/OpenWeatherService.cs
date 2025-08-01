@@ -23,12 +23,14 @@ public sealed class OpenWeatherService(
         return await client.GetAsync<JsonDocument>(url);
     }
 
-    public async Task<JsonDocument> GetWeatherForecast(string city, string? countryCode = null)
+    public async Task<JsonDocument> Get5Day3HourStepForecast(
+        string city,
+        string? countryCode = null)
     {
         var location = GetLocationQuery(city, countryCode);
         var url = $"{_options.BaseUrl}/data/2.5/forecast?q={location}&appid={_options.ApiKey}&units=metric&lang=en";
 
-        logger.LogDebug("Calling GetWeatherForecast for city {City}, country {Country}", city, countryCode);
+        logger.LogDebug("Calling Get5Day3HourStepForecast for city {City}, country {Country}", city, countryCode);
 
         return await client.GetAsync<JsonDocument>(url);
     }
