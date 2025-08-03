@@ -1,18 +1,27 @@
 {
   "$schema": "https://modelcontextprotocol.io/schemas/draft/2025-07-09/server.json",
-  "description": "<your description here>",
-  "name": "io.github.<your GitHub username here>/<your repo name>",
+  "description": "",
+  "name": "io.github.OKtol/dotnet-test-assignment",
   "packages": [
     {
       "registry_name": "nuget",
-      "name": "<your package ID here>",
+      "name": "OKtol.SampleMcpServer",
       "version": "0.1.0-beta",
       "package_arguments": [],
-      "environment_variables": []
+      "environment_variables": [
+        {
+          "name": "OpenWeatherOptions__BaseUrl",
+          "value": "https://api.openweathermap.org/"
+        },
+        {
+          "name": "OpenWeatherOptions__ApiKey",
+          "value": ""
+        }
+      ]
     }
   ],
   "repository": {
-    "url": "https://github.com/<your GitHub username here>/<your repo name>",
+    "url": "https://github.com/OKtol/dotnet-test-assignment",
     "source": "github"
   },
   "version_detail": {

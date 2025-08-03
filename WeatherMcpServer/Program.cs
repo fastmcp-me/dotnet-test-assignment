@@ -24,7 +24,6 @@ builder.Services.AddTransient<OpenWeatherService>();
 builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
-    .WithTools<RandomNumberTools>()
     .WithTools<WeatherTools>();
 
 await builder.Build().RunAsync();

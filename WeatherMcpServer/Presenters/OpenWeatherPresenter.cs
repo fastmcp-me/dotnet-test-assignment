@@ -1,0 +1,28 @@
+﻿using Json.Schema;
+using System.Text.Json;
+using WeatherMcpServer.Model;
+
+namespace WeatherMcpServer.Presenters;
+
+public static class OpenWeatherPresenter
+{
+    private static JsonSchema _geoSchema = JsonSchema.FromFile("Schemas/OpenWeather/geo-direct.json");
+
+    public static GeoCoordinate GetGeoCoordinate(this JsonElement geoRoot)
+    {
+        if (!_geoSchema.Evaluate(geoRoot).IsValid)
+            throw new ArgumentException("Invalid geo data format.");
+
+        if (geoRoot.GetArrayLength() == 0)
+            throw new ArgumentException("Location not found. Please check the city and country code.");
+
+        var latitude = geoRoot[0].GetProperty("lat").GetDouble();
+        var longitude = geoRoot[0].GetProperty("lon").GetDouble();
+
+        return new GeoCoordinate
+        {
+            Latitude = latitude,
+            Longitude = longitude
+        }; 
+    }
+}

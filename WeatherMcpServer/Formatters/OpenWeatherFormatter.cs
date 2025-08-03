@@ -1,24 +1,33 @@
-﻿using System.Text.Json;
+﻿using Json.Schema;
+using System.Text.Json;
 using WeatherMcpServer.Extensions;
 
 namespace WeatherMcpServer.Formatters;
 
 public static class OpenWeatherFormatter
 {
+    private static JsonSchema _currentWeatherSchema = JsonSchema.FromFile("Schemas/OpenWeather/current-weather.json");
+
     public static string ToCurrentWeatherDescription(this JsonElement currentWeatherRoot)
     {
+        if (!_currentWeatherSchema.Evaluate(currentWeatherRoot).IsValid)
+            return "Invalid current weather data format.";
+
         var date = currentWeatherRoot.GetProperty("dt").ToDateTimeString();
-
         string description = currentWeatherRoot.GetProperty("weather")[0].GetProperty("description").GetString() ?? "N/A";
-
         double temp = currentWeatherRoot.GetProperty("main").GetProperty("temp").GetDouble();
         int pressure = currentWeatherRoot.GetProperty("main").GetProperty("pressure").GetInt32();
 
         return $"{date}: {description}, temperature: {temp}°C, pressure: {pressure} hPa.";
     }
 
+    private static JsonSchema _forecastWeatherSchema = JsonSchema.FromFile("Schemas/OpenWeather/forecast-5day-3hour.json");
+
     public static string ToDailyForecastDescription(this JsonElement forecastRoot, int hourStep)
     {
+        if (!_forecastWeatherSchema.Evaluate(forecastRoot).IsValid)
+            return "Invalid forecast data format.";
+
         var list = forecastRoot.GetProperty("list");
 
         if (list.GetArrayLength() == 0)
@@ -46,11 +55,13 @@ public static class OpenWeatherFormatter
         return string.Join("\n", dailyDescriptions);
     }
 
-    public static string ToDateTimeString(this JsonElement dt) => 
-        dt.GetInt64().ToDateTime().ToString("dd-MM-yyyy HH:mm");
+    private static JsonSchema _alertsSchema = JsonSchema.FromFile("Schemas/OpenWeather/weather-alerts.json");
 
     public static string ToAlertsDescription(this JsonElement alertRoot)
     {
+        if (!_alertsSchema.Evaluate(alertRoot).IsValid)
+            return "Invalid weather alerts data format.";
+
         if (!alertRoot.TryGetProperty("alerts", out var alerts) || alerts.GetArrayLength() == 0)
             return "No weather alerts for this location.";
 
@@ -63,4 +74,7 @@ public static class OpenWeatherFormatter
         }
         return string.Join("\n", result);
     }
+
+    private static string ToDateTimeString(this JsonElement dt) =>
+        dt.GetInt64().ToDateTime().ToString("dd-MM-yyyy HH:mm");
 }

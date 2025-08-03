@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Net.Http.Json;
+using System.Text.Json;
 namespace WeatherMcpServer.Clients;
 
 public class OpenWeatherHttpClient(
@@ -11,13 +11,27 @@ public class OpenWeatherHttpClient(
         logger.LogDebug("Making GET request to {Url}", url);
 
         var response = await httpClient.GetAsync(url);
+        var content = await response.Content.ReadAsStringAsync();
+
+        logger.LogDebug("Response from {Url}: {Content}", url, content);
+
         if (!response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
+            logger.LogWarning("Request to {Url} failed with status code {StatusCode} ({ReasonPhrase}). Response content: {Content}",
+                url, (int)response.StatusCode, response.ReasonPhrase, content);
             throw new InvalidOperationException($"Request to {url} failed with status code {(int)response.StatusCode} ({response.ReasonPhrase}). Response content: {content}");
         }
-        
-        return await response.Content.ReadFromJsonAsync<T>() 
-               ?? throw new InvalidOperationException($"Failed to deserialize response from {url}");
+
+        try
+        {
+            var result = JsonSerializer.Deserialize<T>(content) 
+                ?? throw new InvalidOperationException($"Failed to deserialize response from {url}");
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Deserialization failed for response from {Url}. Content: {Content}", url, content);
+            throw;
+        }
     }
 }

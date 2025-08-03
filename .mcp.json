@@ -1,0 +1,17 @@
+{
+  "servers": {
+    "WeatherMcpServer": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "WeatherMcpServer"
+      ],
+      "env": {
+        "OpenWeatherOptions__BaseUrl": "https://api.openweathermap.org/",
+        "OpenWeatherOptions__ApiKey": ""
+      }
+    }
+  }
+}

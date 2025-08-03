@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -13,7 +13,7 @@
 
         <!-- Set recommended package metadata -->
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageId>SampleMcpServer</PackageId>
+        <PackageId>OKtol.SampleMcpServer</PackageId>
         <PackageVersion>0.1.0-beta</PackageVersion>
         <PackageTags>AI; MCP; server; stdio</PackageTags>
         <Description>An MCP server using the MCP C# SDK.</Description>
@@ -26,11 +26,34 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="JsonSchema.Net" Version="7.3.4" />
         <PackageReference Include="Microsoft.Extensions.AI.Abstractions" Version="9.7.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0-preview.6.25358.103" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.7" />
         <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="9.0.7" />
         <PackageReference Include="ModelContextProtocol" Version="0.3.0-preview.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Schemas\OpenWeather\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\OpenWeather\current-weather.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\OpenWeather\forecast-5day-3hour.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\OpenWeather\geo-direct.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\OpenWeather\weather-alerts.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>
