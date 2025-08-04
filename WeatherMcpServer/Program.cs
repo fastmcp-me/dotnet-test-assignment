@@ -1,7 +1,8 @@
+using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using WeatherMcpServer.Tools;
+using Shared.Utils;
 
 var builder = Host.CreateApplicationBuilder(args);
 
