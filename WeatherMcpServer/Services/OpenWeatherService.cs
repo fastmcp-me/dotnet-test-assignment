@@ -14,7 +14,7 @@ public sealed class OpenWeatherService(
     IOptions<OpenWeatherOptions> options, 
     ILogger<OpenWeatherService> logger)
 {
-    private readonly OpenWeatherOptions _options = options.Value;
+    private readonly string _apiKey = options.Value.ApiKey;
 
     public async Task<string> GetCurrentWeatherDescription(string city, string? countryCode = null)
     {
@@ -22,9 +22,9 @@ public sealed class OpenWeatherService(
             throw new ArgumentException("City name must be provided.", nameof(city));
 
         var location = GetLocationQuery(city, countryCode);
-        var url = $"{_options.BaseUrl}/data/2.5/weather?q={location}&appid={_options.ApiKey}&units=metric&lang=en";
+        var url = $"/data/2.5/weather?q={location}&appid={_apiKey}&units=metric&lang=en";
 
-        logger.LogDebug("Calling GetCurrentWeather for city {City}, country {Country}, url: {Url}", city, countryCode, url);
+        logger.LogDebug("Calling GetCurrentWeatherDescription for city {City}, country {Country}, url: {Url}", city, countryCode, url);
 
         try
         {
@@ -46,7 +46,7 @@ public sealed class OpenWeatherService(
             throw new ArgumentException("City name must be provided.", nameof(city));
 
         var location = GetLocationQuery(city, countryCode);
-        var url = $"{_options.BaseUrl}/data/2.5/forecast?q={location}&appid={_options.ApiKey}&units=metric&lang=en";
+        var url = $"/data/2.5/forecast?q={location}&appid={_apiKey}&units=metric&lang=en";
 
         logger.LogDebug("Calling Get5Day3HourStepForecast for city {City}, country {Country}, url: {Url}", city, countryCode, url);
 
@@ -69,7 +69,7 @@ public sealed class OpenWeatherService(
 
         var geo = await GetCoordinates(city, countryCode);
 
-        var url =$"{_options.BaseUrl}/data/3.0/onecall?lat={geo.Latitude}&lon={geo.Longitude}&appid={_options.ApiKey}&exclude=current,minutely,hourly,daily&units=metric&lang=en";
+        var url =$"/data/3.0/onecall?lat={geo.Latitude}&lon={geo.Longitude}&appid={_apiKey}&exclude=current,minutely,hourly,daily&units=metric&lang=en";
 
         logger.LogDebug("Calling GetWeatherAlerts for city {City}, country {Country}, url: {Url}", city, countryCode, url);
 
@@ -88,7 +88,7 @@ public sealed class OpenWeatherService(
     private async Task<GeoCoordinate> GetCoordinates(string city, string? countryCode = null)
     {
         var location = GetLocationQuery(city, countryCode);
-        var url = $"{_options.BaseUrl}/geo/1.0/direct?q={location}&limit=1&appid={_options.ApiKey}";
+        var url = $"/geo/1.0/direct?q={location}&limit=1&appid={_apiKey}";
 
         logger.LogDebug("Calling GetCoordinates for city {City}, country {Country}", city, countryCode);
 

@@ -31,7 +31,7 @@ public static class OpenWeatherFormatter
         var list = forecastRoot.GetProperty("list");
 
         if (list.GetArrayLength() == 0)
-            return $"No forecast data available.";
+            return "No forecast data available.";
 
         var dailyDescriptions = new List<string>();
         int firstRecordTime = 0;
@@ -43,16 +43,31 @@ public static class OpenWeatherFormatter
 
             if (isFirstRecord)
             {
-                dailyDescriptions.Add(item.ToCurrentWeatherDescription());
+                dailyDescriptions.Add(item.ToForecastItemDescription());
                 firstRecordTime = recordTime;
                 isFirstRecord = false;
             }
             else
                 if (recordTime == firstRecordTime - hourStep)
-                    dailyDescriptions.Add(item.ToCurrentWeatherDescription());
+                    dailyDescriptions.Add(item.ToForecastItemDescription());
         }
 
         return string.Join("\n", dailyDescriptions);
+    }
+
+    private static JsonSchema _forecastItemSchema = JsonSchema.FromFile("Schemas/OpenWeather/forecast-item.json");
+
+    private static string ToForecastItemDescription(this JsonElement forecastItem)
+    {
+        if (!_forecastItemSchema.Evaluate(forecastItem).IsValid)
+            return "Invalid forecast item data format.";
+
+        var date = forecastItem.GetProperty("dt").ToDateTimeString();
+        string description = forecastItem.GetProperty("weather")[0].GetProperty("description").GetString() ?? "N/A";
+        double temp = forecastItem.GetProperty("main").GetProperty("temp").GetDouble();
+        int pressure = forecastItem.GetProperty("main").GetProperty("pressure").GetInt32();
+
+        return $"{date}: {description}, temperature: {temp}°C, pressure: {pressure} hPa.";
     }
 
     private static JsonSchema _alertsSchema = JsonSchema.FromFile("Schemas/OpenWeather/weather-alerts.json");

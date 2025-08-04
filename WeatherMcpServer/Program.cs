@@ -19,6 +19,7 @@ builder.Logging.AddConsole(o => o.LogToStandardErrorThreshold = LogLevel.Debug);
 
 builder.Services.AddHttpClient<OpenWeatherHttpClient>();
 builder.Services.AddTransient<OpenWeatherService>();
+//builder.Services.AddTransient<WeatherTools>();
 
 // Add the MCP services: the transport to use (stdio) and the tools to register.
 builder.Services
@@ -26,4 +27,11 @@ builder.Services
     .WithStdioServerTransport()
     .WithTools<WeatherTools>();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+//var tool = host.Services.GetRequiredService<WeatherTools>();
+//Console.WriteLine($"\n{await tool.GetCurrentWeather("Moscow", "ru")}\n");
+//Console.WriteLine($"\n{await tool.GetWeatherForecast("Moscow", "ru")}\n");
+//Console.WriteLine($"\n{await tool.GetWeatherAlerts("Moscow", "ru")}\n");
+
+await host.RunAsync();

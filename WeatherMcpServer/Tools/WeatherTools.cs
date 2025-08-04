@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
-using WeatherMcpServer.Formatters;
 using WeatherMcpServer.Services;
 
 namespace WeatherMcpServer.Tools;
@@ -19,6 +18,7 @@ public class WeatherTools(
         if (string.IsNullOrWhiteSpace(city))
             return "City name must be provided.";
 
+        logger.LogDebug("Calling GetCurrentWeather for city {City}, country {Country}", city, countryCode);
         try
         {
             var description = await weatherService.GetCurrentWeatherDescription(city, countryCode);
@@ -32,7 +32,7 @@ public class WeatherTools(
         catch (InvalidOperationException ex)
         {
             logger.LogWarning(ex, "API error for GetCurrentWeather: {Message}", ex.Message);
-            return $"Weather data not found for {city}{(countryCode is not null ? $", {countryCode}" : "")}. Please check the city and country code.";
+            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. due to an internal error.";
         }
         catch (Exception ex)
         {
@@ -50,6 +50,7 @@ public class WeatherTools(
         if (string.IsNullOrWhiteSpace(city))
             return "City name must be provided.";
 
+        logger.LogDebug("Calling GetWeatherForecast for city {City}, country {Country}", city, countryCode);
         try
         {
             var dailyDescriptions = await weatherService.Get5Day3HourStepForecast(city, countryCode);
@@ -63,7 +64,7 @@ public class WeatherTools(
         catch (InvalidOperationException ex)
         {
             logger.LogWarning(ex, "API error for GetWeatherForecast: {Message}", ex.Message);
-            return $"Weather forecast not found for {city}{(countryCode is not null ? $", {countryCode}" : "")}. Please check the city and country code.";
+            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. due to an internal error.";
         }
         catch (Exception ex)
         {
@@ -81,6 +82,7 @@ public class WeatherTools(
         if (string.IsNullOrWhiteSpace(city))
             return "City name must be provided.";
 
+        logger.LogDebug("Calling GetWeatherAlerts for city {City}, country {Country}", city, countryCode);
         try
         {
             var description = await weatherService.GetWeatherAlertsDescription(city, countryCode);
@@ -94,7 +96,7 @@ public class WeatherTools(
         catch (InvalidOperationException ex)
         {
             logger.LogWarning(ex, "API error for GetWeatherAlerts: {Message}", ex.Message);
-            return $"Weather alerts not found for {city}{(countryCode is not null ? $", {countryCode}" : "")}. Please check the city and country code.";
+            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. due to an internal error.";
         }
         catch (Exception ex)
         {

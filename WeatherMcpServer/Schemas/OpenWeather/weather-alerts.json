@@ -414,10 +414,6 @@
     "lon",
     "timezone",
     "timezone_offset",
-    "current",
-    "minutely",
-    "hourly",
-    "daily",
     "alerts"
   ]
 }

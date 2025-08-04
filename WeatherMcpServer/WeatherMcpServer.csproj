@@ -13,8 +13,8 @@
 
         <!-- Set recommended package metadata -->
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageId>OKtol.SampleMcpServer</PackageId>
-        <PackageVersion>0.1.0-beta</PackageVersion>
+        <PackageId>OKtol.WeatherMcpServer</PackageId>
+        <PackageVersion>0.1.1-beta</PackageVersion>
         <PackageTags>AI; MCP; server; stdio</PackageTags>
         <Description>An MCP server using the MCP C# SDK.</Description>
     </PropertyGroup>
@@ -46,6 +46,9 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="Schemas\OpenWeather\forecast-5day-3hour.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Schemas\OpenWeather\forecast-item.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="Schemas\OpenWeather\geo-direct.json">

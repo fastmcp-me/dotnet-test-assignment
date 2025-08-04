@@ -1,16 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Text.Json;
+using WeatherMcpServer.Options;
 namespace WeatherMcpServer.Clients;
 
 public class OpenWeatherHttpClient(
     HttpClient httpClient,
+    IOptions<OpenWeatherOptions> options,
     ILogger<OpenWeatherHttpClient> logger)
 {
+    private readonly string _openWeatherBaseUrl = options.Value.BaseUrl;
+
     public async Task<T> GetAsync<T>(string url)
     {
         logger.LogDebug("Making GET request to {Url}", url);
 
-        var response = await httpClient.GetAsync(url);
+        var response = await httpClient.GetAsync(_openWeatherBaseUrl + url);
         var content = await response.Content.ReadAsStringAsync();
 
         logger.LogDebug("Response from {Url}: {Content}", url, content);
