@@ -1,26 +1,61 @@
 using System.ComponentModel;
 using ModelContextProtocol.Server;
+using WeatherMcpServer.Formatters;
+using WeatherMcpServer.Services;
 
-namespace WeatherMcpServer.Tools;
 
 public class WeatherTools
 {
-    [McpServerTool]
-    [Description("Describes random weather in the provided city.")]
-    public string GetCityWeather(
-        [Description("Name of the city to return weather for")] string city)
+    private readonly IWeatherService _weatherService;
+
+    public WeatherTools(IWeatherService weatherService)
     {
-        // Read the environment variable during tool execution.
-        // Alternatively, this could be read during startup and passed via IOptions dependency injection
-        var weather = Environment.GetEnvironmentVariable("WEATHER_CHOICES");
-        if (string.IsNullOrWhiteSpace(weather))
-        {
-            weather = "balmy,rainy,stormy";
-        }
+        _weatherService = weatherService;
+    }
 
-        var weatherChoices = weather.Split(",");
-        var selectedWeatherIndex =  Random.Shared.Next(0, weatherChoices.Length);
+    [McpServerTool]
+    [Description("Gets current weather conditions for the specified city.")]
+    public async Task<string> GetCurrentWeather(
+        [Description("The city name to get weather for")]
+        string city,
+        [Description("Optional: Country code (e.g., 'US', 'UK')")]
+        string? countryCode = null)
+    {
+        var location = await _weatherService.GetLocation(city + (string.IsNullOrEmpty(countryCode) ? "" : $",{countryCode}"));
 
-        return $"The weather in {city} is {weatherChoices[selectedWeatherIndex]}.";
+        var weather = await _weatherService.GetWeather(location);
+        return WeatherFormatter.FormatCurrentWeather(weather.Current, location.Name);
+    }
+
+    [McpServerTool]
+    [Description("Gets forecast for 8 days for the specified city.")]
+    public async Task<string> GetForecast(
+        [Description("The city name to get weather for")]
+        string city,
+        [Description("Optional: Country code (e.g., 'US', 'UK')")]
+        string? countryCode = null)
+    {
+        var location = await _weatherService.GetLocation(city + (string.IsNullOrEmpty(countryCode) ? "" : $",{countryCode}"));
+
+        var weather = await _weatherService.GetWeather(location);
+
+        return WeatherFormatter.FormatForecast(weather.Daily, location.Name);
+
+    }
+    
+    [McpServerTool]
+    [Description("Gets weather alerts for the specified city.")]
+    public async Task<string> GetAlerts(
+        [Description("The city name to get weather for")]
+        string city,
+        [Description("Optional: Country code (e.g., 'US', 'UK')")]
+        string? countryCode = null)
+    {
+        var location = await _weatherService.GetLocation(city + (string.IsNullOrEmpty(countryCode) ? "" : $",{countryCode}"));
+
+        var weather = await _weatherService.GetWeather(location);
+
+        return WeatherFormatter.FormatAlerts(weather.Alerts, location.Name);
+
     }
 }

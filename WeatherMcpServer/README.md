@@ -1,53 +1,178 @@
-# MCP Server
+# WeatherMcpServer
 
-This README was created using the C# MCP server project template. It demonstrates how you can easily create an MCP server using C# and publish it as a NuGet package.
+A Model Context Protocol (MCP) server for retrieving weather information. This server provides tools that enable AI models to access current weather conditions, forecasts, and weather alerts for specified locations.
 
-See [aka.ms/nuget/mcp/guide](https://aka.ms/nuget/mcp/guide) for the full guide.
+## Features
 
-Please note that this template is currently in an early preview stage. If you have feedback, please take a [brief survey](http://aka.ms/dotnet-mcp-template-survey).
+- Get current weather conditions for any city
+- Retrieve weather forecasts for the next 8 days
+- Access weather alerts for a specific location
 
-## Checklist before publishing to NuGet.org
+## Prerequisites
 
-- Test the MCP server locally using the steps below.
-- Update the package metadata in the .csproj file, in particular the `<PackageId>`.
-- Update `.mcp/server.json` to declare your MCP server's inputs.
-  - See [configuring inputs](https://aka.ms/nuget/mcp/guide/configuring-inputs) for more details.
-- Pack the project using `dotnet pack`.
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later
+- An OpenWeatherMap API key
+  - [Sign up](https://home.openweathermap.org/users/sign_up) for an OpenWeather account if you don't have one
+  - After registration, get your API key from your [account page](https://home.openweathermap.org/api_keys)
+  - The free tier includes 1,000 API calls per day at no cost
 
-The `bin/Release` directory will contain the package file (.nupkg), which can be [published to NuGet.org](https://learn.microsoft.com/nuget/nuget-org/publish-a-package).
+## Setup and Configuration
 
-## Developing locally
+### Installation
 
-To test this MCP server from source code (locally) without using a built MCP server package, you can configure your IDE to run the project directly using `dotnet run`.
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd WeatherMcpServer
+   ```
 
-```json
-{
-  "servers": {
-    "WeatherMcpServer": {
-      "type": "stdio",
-      "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "<PATH TO PROJECT DIRECTORY>"
-      ]
-    }
-  }
-}
+2. Build the project:
+   ```bash
+   dotnet build
+   ```
+
+3. Configure OpenWeatherMap API:
+   - Option 1: Using appsettings.json
+     - Open `appsettings.json` 
+     - Replace the `ApiKey` value with your own OpenWeatherMap API key:
+     ```json
+     "OpenWeatherMap": {
+       "ApiKey": "your-api-key-here",
+       "BaseUrl": "https://api.openweathermap.org"
+     }
+     ```
+   - Option 2: Using environment variables
+     - Set the following environment variable:
+     ```bash
+     # For macOS/Linux
+     export OpenWeatherMap__ApiKey="your-api-key-here"
+     
+     # For Windows Command Prompt
+     set OpenWeatherMap__ApiKey=your-api-key-here
+     
+     # For Windows PowerShell
+     $env:OpenWeatherMap__ApiKey = "your-api-key-here"
+     ```
+
+## Running the Server
+
+Run the server using the .NET CLI:
+
+```bash
+dotnet run
 ```
+
+The server uses standard input/output for communication, following the MCP protocol specification.
+
+## Usage Examples
+
+The server exposes several MCP tools that can be called by MCP clients:
+
 
 ## Testing the MCP Server
 
-Once configured, you can ask Copilot Chat for a random number, for example, `Give me 3 random numbers`. It should prompt you to use the `get_random_number` tool on the `WeatherMcpServer` MCP server and show you the results.
+Here are examples of testing each MCP tool with real responses:
+
+### Testing Current Weather Tool
+
+1. Configure your MCP client and server as described above
+2. Ask: "What's the current weather in Astana?"
+3. The system will use the `get_current_weather` tool and return something like:
+
+```
+Current Weather in Astana:
+
+Condition: Clouds - overcast clouds
+Temperature: 22.8°C
+Feels Like: 22.3°C
+Humidity: 46%
+Wind Speed: 6.2 m/s
+UV Index: 3.1
+Cloud Cover: 100%
+Visibility: 10.0 km
+Sun Times: Sunrise at 06:02, Sunset at 18:09
+```
+
+### Testing Weather Forecast Tool
+
+1. Ask: "What's the weather forecast for Astana for the next week?"
+2. The system will use the `get_forecast` tool and return something like:
+
+```
+8-Day Weather Forecast for Astana
+Thursday, July 31, 2025
+
+Weather: Overcast clouds
+Temperature: 22.43°C - 23.14°C
+Day: 22.84°C, Night: 22.88°C
+Cloud Cover: 100%
+Summary: Partly cloudy conditions throughout the day
+
+Friday, August 1, 2025
+Weather: Overcast clouds
+Temperature: 22.21°C - 22.79°C
+Day: 22.57°C, Night: 22.30°C
+Cloud Cover: 92%
+Summary: Partly cloudy conditions throughout the day
+
+Saturday, August 2, 2025
+Weather: Overcast clouds
+Temperature: 21.74°C - 22.55°C
+Day: 22.09°C, Night: 22.05°C
+Cloud Cover: 100%
+Summary: Partly cloudy conditions throughout the day
+[Additional days...]
+```
+
+### Testing Weather Alerts Tool
+
+1. Ask: "Are there any weather alerts for Astana?"
+2. The system will use the `get_alerts` tool and return something like:
+
+```
+Weather Alerts for Miami:
+
+Weather Alerts for Astana:
+
+🚨 Alert #1: HEAT ADVISORY
+   Sender: National Weather Service
+   Start: Jul 31, 2025 09:00
+   End: Aug 01, 2025 21:00
+   Description: Thunderstorms
+   Tags: Thunderstorm
+
+```
+
+When testing, you may see different results based on current weather conditions, as the service retrieves real-time data from OpenWeatherMap.
+
+## Implementation Approach
+
+### Architecture
+
+The server is built using the MCP (Model Context Protocol) framework with a practical layered architecture:
+
+1. **Entry Point**: `Program.cs` - Sets up dependency injection, configuration, and initializes the MCP server with stdio transport
+2. **Tools Layer**: Provides MCP-compatible tools that can be invoked by clients
+3. **Services Layer**: Contains the business logic for retrieving and processing weather data
+4. **DTOs**: Data Transfer Objects for exchanging data between layers
+
+The architecture is designed to be straightforward and focused on the specific task of providing weather information via the MCP protocol. It maintains a separation of concerns while remaining lightweight and pragmatic.
+
+### Key Components
+
+- **WeatherTools**: Implements the MCP server tools for weather-related functionality
+- **WeatherService**: Handles communication with the OpenWeatherMap API
+- **WeatherFormatter**: Formats weather data into human-readable responses
+
 
 ## Publishing to NuGet.org
 
 1. Run `dotnet pack -c Release` to create the NuGet package
 2. Publish to NuGet.org with `dotnet nuget push bin/Release/*.nupkg --api-key <your-api-key> --source https://api.nuget.org/v3/index.json`
 
-## Using the MCP Server from NuGet.org
+## Configuring in VS Code or Visual Studio
 
-Once the MCP server package is published to NuGet.org, you can configure it in your preferred IDE. Both VS Code and Visual Studio use the `dnx` command to download and install the MCP server package from NuGet.org.
+Once the MCP server package is published to NuGet.org, you can configure it in your preferred IDE:
 
 - **VS Code**: Create a `<WORKSPACE DIRECTORY>/.vscode/mcp.json` file
 - **Visual Studio**: Create a `<SOLUTION DIRECTORY>\.mcp.json` file
@@ -61,9 +186,9 @@ For both VS Code and Visual Studio, the configuration file uses the following se
       "type": "stdio",
       "command": "dnx",
       "args": [
-        "<your package ID here>",
+        "SampleMcpServer",
         "--version",
-        "<your package version here>",
+        "0.1.0-beta",
         "--yes"
       ]
     }
