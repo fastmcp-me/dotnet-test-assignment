@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 using WeatherMcpServer.Clients;
 using WeatherMcpServer.Formatters;
 using WeatherMcpServer.Model;
@@ -24,11 +23,11 @@ public sealed class OpenWeatherService(
         var location = GetLocationQuery(city, countryCode);
         var url = $"/data/2.5/weather?q={location}&appid={_apiKey}&units=metric&lang=en";
 
-        logger.LogDebug("Calling GetCurrentWeatherDescription for city {City}, country {Country}, url: {Url}", city, countryCode, url);
+        logger.LogDebug("Calling GetCurrentWeatherDescription for city {City}, country {Country}", city, countryCode);
 
         try
         {
-            var response = await client.GetAsync<JsonDocument>(url);
+            var response = await client.GetJsonAsync(url);
             return response.RootElement.ToCurrentWeatherDescription();
         }
         catch (Exception ex)
@@ -48,11 +47,11 @@ public sealed class OpenWeatherService(
         var location = GetLocationQuery(city, countryCode);
         var url = $"/data/2.5/forecast?q={location}&appid={_apiKey}&units=metric&lang=en";
 
-        logger.LogDebug("Calling Get5Day3HourStepForecast for city {City}, country {Country}, url: {Url}", city, countryCode, url);
+        logger.LogDebug("Calling Get5Day3HourStepForecast for city {City}, country {Country}", city, countryCode);
 
         try
         {
-            var response = await client.GetAsync<JsonDocument>(url);
+            var response = await client.GetJsonAsync(url);
             return response.RootElement.ToDailyForecastDescription(3);
         }
         catch (Exception ex)
@@ -71,11 +70,11 @@ public sealed class OpenWeatherService(
 
         var url =$"/data/3.0/onecall?lat={geo.Latitude}&lon={geo.Longitude}&appid={_apiKey}&exclude=current,minutely,hourly,daily&units=metric&lang=en";
 
-        logger.LogDebug("Calling GetWeatherAlerts for city {City}, country {Country}, url: {Url}", city, countryCode, url);
+        logger.LogDebug("Calling GetWeatherAlerts for city {City}, country {Country}", city, countryCode);
 
         try
         {
-            var response = await client.GetAsync<JsonDocument>(url);
+            var response = await client.GetJsonAsync(url);
             return response.RootElement.ToAlertsDescription();
         }
         catch (Exception ex)
@@ -94,7 +93,7 @@ public sealed class OpenWeatherService(
 
         try
         {
-            var response = await client.GetAsync<JsonDocument>(url);
+            var response = await client.GetJsonAsync(url);
             return response.RootElement.GetGeoCoordinate();
         }
         catch (Exception ex)

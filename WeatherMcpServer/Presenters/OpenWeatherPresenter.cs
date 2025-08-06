@@ -25,4 +25,14 @@ public static class OpenWeatherPresenter
             Longitude = longitude
         }; 
     }
+
+    public static string GetErrorMessage(this JsonElement content)
+    {
+        if (content.TryGetProperty("message", out var messageElement))
+        {
+            return messageElement.GetString() ?? "No error message provided.";
+        }
+
+        return "No 'message' field in response.";
+    }
 }

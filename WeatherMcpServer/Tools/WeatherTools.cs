@@ -32,12 +32,12 @@ public class WeatherTools(
         catch (InvalidOperationException ex)
         {
             logger.LogWarning(ex, "API error for GetCurrentWeather: {Message}", ex.Message);
-            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. due to an internal error.";
+            return $"Could not retrieve current weather for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get current weather for {City}, {Country}", city, countryCode);
-            return $"Could not retrieve weather for {city}{(countryCode is not null ? $", {countryCode}" : "")} due to an internal error.";
+            return $"Could not retrieve current weather for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
         }
     }
 
@@ -64,12 +64,12 @@ public class WeatherTools(
         catch (InvalidOperationException ex)
         {
             logger.LogWarning(ex, "API error for GetWeatherForecast: {Message}", ex.Message);
-            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. due to an internal error.";
+            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get weather forecast for {City}, {Country}", city, countryCode);
-            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")} due to an internal error.";
+            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
         }
     }
 
@@ -96,12 +96,12 @@ public class WeatherTools(
         catch (InvalidOperationException ex)
         {
             logger.LogWarning(ex, "API error for GetWeatherAlerts: {Message}", ex.Message);
-            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. due to an internal error.";
+            return $"Could not retrieve weather alerts for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to get weather alerts for {City}, {Country}", city, countryCode);
-            return $"Could not retrieve weather alerts for {city}{(countryCode is not null ? $", {countryCode}" : "")} due to an internal error.";
+            return $"Could not retrieve weather alerts for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
         }
     }
 }

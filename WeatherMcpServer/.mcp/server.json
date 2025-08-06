@@ -6,7 +6,7 @@
     {
       "registry_name": "nuget",
       "name": "OKtol.WeatherMcpServer",
-      "version": "0.1.1-beta",
+      "version": "0.1.3",
       "package_arguments": [],
       "environment_variables": [
         {
@@ -20,7 +20,7 @@
             "openweather_api_key": {
               "description": "Api key from your https://api.openweathermap.org/ account.",
               "is_required": true,
-              "is_secret": false
+              "is_secret": true
             }
           }
         }
@@ -32,6 +32,6 @@
     "source": "github"
   },
   "version_detail": {
-    "version": "0.1.1-beta"
+    "version": "0.1.3"
   }
 }
