@@ -32,7 +32,7 @@ It was created as part of the FastMCP assignment and showcases full integration 
 
 ## 🚀 Setup Instructions
 
-[All installation, configuration and usage instructions are here.](/WeatherMcpServe/README.md)
+[All installation, configuration and usage instructions are here.](/WeatherMcpServer/README.md)
 
 ## Documentation (architecture overview)
 
