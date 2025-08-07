@@ -1,26 +1,54 @@
-using System.ComponentModel;
+using MediatR;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ModelContextProtocol.Server;
+using WeatherMcpServer.Configurations;
+using WeatherMcpServer.Features.Queries;
+using System.ComponentModel;
 
 namespace WeatherMcpServer.Tools;
 
 public class WeatherTools
 {
-    [McpServerTool]
-    [Description("Describes random weather in the provided city.")]
-    public string GetCityWeather(
-        [Description("Name of the city to return weather for")] string city)
+    private readonly ILogger<WeatherTools> _logger;
+    private readonly WeatherApiConfiguration _options;
+    private readonly IMediator _mediator;
+
+    public WeatherTools(ILogger<WeatherTools> logger, IOptions<WeatherApiConfiguration> options, IMediator mediator)
     {
-        // Read the environment variable during tool execution.
-        // Alternatively, this could be read during startup and passed via IOptions dependency injection
-        var weather = Environment.GetEnvironmentVariable("WEATHER_CHOICES");
-        if (string.IsNullOrWhiteSpace(weather))
-        {
-            weather = "balmy,rainy,stormy";
-        }
+        _logger = logger;
+        _options = options.Value;
+        _mediator = mediator;
+    }
 
-        var weatherChoices = weather.Split(",");
-        var selectedWeatherIndex =  Random.Shared.Next(0, weatherChoices.Length);
+    [McpServerTool]
+    [Description("Gets current weather conditions for the specified city.")]
+    public Task<string> GetCurrentWeather(
+        [Description("The city name to get weather for")] string city,
+        [Description("Optional: Country code (e.g., 'US', 'UK')")] string? countryCode = null,
+        CancellationToken cancellationToken = default)
+    {
+        return _mediator.Send(new GetCurrentWeather.Query(city, countryCode), cancellationToken);
+    }
 
-        return $"The weather in {city} is {weatherChoices[selectedWeatherIndex]}.";
+    [McpServerTool]
+    [Description("Get weather forecast for a specified location.")]
+    public Task<string> GetWeatherForecast(
+        [Description("The city name to get weather for")] string city,
+        [Description("Optional: Country code (e.g., 'US', 'UK')")] string? countryCode = null,
+        [Description("Optional: Number of days to forecast (min: 1, max: 5). Default is 3.")] int days = 3,
+        CancellationToken cancellationToken = default)
+    {
+        return _mediator.Send(new GetWeatherForecast.Query(city, countryCode, days), cancellationToken);
+    }
+
+    [McpServerTool]
+    [Description("Get weather alerts/warnings for a location.")]
+    public Task<string> GetWeatherAlerts(
+        [Description("The city name to get weather alerts for")] string city,
+        [Description("Optional: Country code (e.g., 'US', 'UK')")] string? countryCode = null,
+        CancellationToken cancellationToken = default)
+    {
+        return _mediator.Send(new GetWeatherAlerts.Query(city, countryCode), cancellationToken);
     }
 }
