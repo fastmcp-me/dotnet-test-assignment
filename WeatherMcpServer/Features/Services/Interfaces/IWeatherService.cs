@@ -33,5 +33,5 @@ public interface IWeatherService
     /// <param name="countryCode">The country code.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The weather alert data.</returns>
-    Task<IWeatherAlertDto> GetWeatherAlerts(string city, string? countryCode, CancellationToken cancellationToken);
+    Task<IWeatherAlertDto?> GetWeatherAlerts(string city, string? countryCode, CancellationToken cancellationToken);
 }

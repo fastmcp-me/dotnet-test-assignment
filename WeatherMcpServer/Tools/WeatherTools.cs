@@ -18,7 +18,6 @@ public class WeatherTools
     {
         _logger = logger;
         _options = options.Value;
-        _logger.LogInformation("WeatherTools initialized with API Key: {ApiKey}", _options.ApiKey?.Replace(_options.ApiKey, "***"));
         _mediator = mediator;
     }
 

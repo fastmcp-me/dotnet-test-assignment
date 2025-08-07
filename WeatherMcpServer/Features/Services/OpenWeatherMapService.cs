@@ -31,9 +31,6 @@ internal class OpenWeatherMapService(
 
     public async Task<ICurrentWeatherDto> GetCurrentWeather(string city, string? countryCode, CancellationToken cancellationToken)
     {
-        logger.LogInformation(weatherApiConfiguration.Value.ApiKey);
-        logger.LogInformation(weatherApiConfiguration.Value.Url);
-        logger.LogInformation(weatherApiConfiguration.Value.Units);
         logger.LogInformation("Getting current weather data in {City}, {CountryCode}.", city, countryCode);
 
         var loc = GetLocationQuery(city, countryCode);
@@ -80,7 +77,7 @@ internal class OpenWeatherMapService(
         return JsonSerializer.Deserialize<WeatherForecastDto>(responseString, _jsonOptions)!;
     }
 
-    public Task<IWeatherAlertDto> GetWeatherAlerts(string city, string? countryCode, CancellationToken cancellationToken)
+    public Task<IWeatherAlertDto?> GetWeatherAlerts(string city, string? countryCode, CancellationToken cancellationToken)
     {
         throw new McpServerException("This method is only available in a paid subscription.");
     }
