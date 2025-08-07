@@ -38,16 +38,14 @@ public class OpenWeatherHttpClient(
             throw new InvalidOperationException($"Failed to parse JSON response from {maskedUrl}. The content might not be valid JSON or is in an unexpected format. Content preview: {preview}");
         }
 
-        if (!response.IsSuccessStatusCode)
-        {
-            var errorMessage = result.RootElement.GetErrorMessage();
-            logger.LogWarning("Request to {MaskedUrl} failed with status code {StatusCode} ({ReasonPhrase}). Message: {ErrorMessage}",
-                maskedUrl, (int)response.StatusCode, response.ReasonPhrase, errorMessage);
+        if (response.IsSuccessStatusCode)
+            return result;
 
-            throw new InvalidOperationException($"{errorMessage}");
-        }
+        var errorMessage = result.RootElement.GetErrorMessage();
+        logger.LogWarning("Request to {MaskedUrl} failed with status code {StatusCode} ({ReasonPhrase}). Message: {ErrorMessage}",
+            maskedUrl, (int)response.StatusCode, response.ReasonPhrase, errorMessage);
 
-        return result;
+        throw new InvalidOperationException($"{errorMessage}");
     }
 
     private static string MaskApiKey(string url)
