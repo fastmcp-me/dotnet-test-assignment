@@ -1,18 +1,30 @@
+using MediatR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WeatherMcpServer.Configurations;
+using WeatherMcpServer.Features.Behaviors;
+using WeatherMcpServer.Features.Services;
 using WeatherMcpServer.Tools;
+using System.Reflection;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-// Configure all logs to go to stderr (stdout is used for the MCP protocol messages).
-builder.Logging.AddConsole(o => o.LogToStandardErrorThreshold = LogLevel.Trace);
+builder.Logging.AddConsole(o => o.LogToStandardErrorThreshold = LogLevel.Debug);
 
-// Add the MCP services: the transport to use (stdio) and the tools to register.
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables("WeatherApiConfiguration");
+
+builder.Services.Configure<WeatherApiConfiguration>(builder.Configuration.GetSection(nameof(WeatherApiConfiguration)));
+builder.Services.AddWeatherService();
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+builder.Services.AddCoreBehaviors();
+
 builder.Services
     .AddMcpServer()
     .WithStdioServerTransport()
-    .WithTools<RandomNumberTools>()
     .WithTools<WeatherTools>();
 
 await builder.Build().RunAsync();

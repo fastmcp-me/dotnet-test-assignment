@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "Ptlv_McpServer": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": [
+        "run"
+      ]
+    }
+  }
+}
