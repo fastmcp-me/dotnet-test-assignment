@@ -5,8 +5,6 @@ using Microsoft.Extensions.Logging;
 using WeatherMcpServer.Application.Interfaces;
 using WeatherMcpServer.CrossCutting;
 using WeatherMcpServer.Domain;
-using WeatherMcpServer.Infrastructure;
-using WeatherMcpServer.Infrastructure.Factories;
 using WeatherMcpServer.Infrastructure.Logging;
 using WeatherMcpServer.Infrastructure.Providers;
 using WeatherMcpServer.Tools;
@@ -25,11 +23,7 @@ builder.Services.AddSingleton<IConfiguration>(configuration);
 builder.Services.Configure<Dictionary<string, WeatherProviderConfig>>(
     builder.Configuration.GetSection("WeatherProviders"));
 
-builder.Services.AddSingleton<IHttpPolicyFactory, HttpPolicyFactory>();
-builder.Services.AddSingleton<ILinkBuilder, LinkBuilder>();
-builder.Services.AddSingleton<ICustomHttpClientFactory, CustomHttpClientFactory>();
 builder.Services.AddSingleton<IRateLimiter>(new TokenBucketRateLimiter(capacity: 20, refillPerSecond: 1));
-builder.Services.AddSingleton<IProviderSelector, PriorityProviderSelector>();
 
 builder.Services.AddHttpClient("OpenWeather")
     .SetHandlerLifetime(TimeSpan.FromMinutes(5))
@@ -39,20 +33,35 @@ builder.Services.AddHttpClient("OpenWeather")
         sp.GetRequiredService<IHttpPolicyFactory>().CreateCircuitBreakerPolicy());
 
 builder.Services.Scan(scan => scan
+    .FromAssemblyOf<IHttpPolicyFactory>()
+    .AddClasses(classes => classes.AssignableTo<IHttpPolicyFactory>())
+        .AsImplementedInterfaces()
+        .WithSingletonLifetime()
+    .FromAssemblyOf<ILinkBuilder>()
+    .AddClasses(classes => classes.AssignableTo<ILinkBuilder>())
+        .AsImplementedInterfaces()
+        .WithSingletonLifetime()
+    .FromAssemblyOf<ICustomHttpClientFactory>()
+    .AddClasses(classes => classes.AssignableTo<ICustomHttpClientFactory>())
+        .AsImplementedInterfaces()
+        .WithSingletonLifetime()
+    .FromAssemblyOf<IProviderSelector>()
+    .AddClasses(classes => classes.AssignableTo<IProviderSelector>())
+        .AsImplementedInterfaces()
+        .WithSingletonLifetime()
     .FromAssemblyOf<IWeatherMediator>()
     .AddClasses(classes => classes.AssignableTo<IWeatherMediator>())
         .AsImplementedInterfaces()
         .WithScopedLifetime()
-    .AddClasses(classes => classes.AssignableTo<IWeatherProvider>())
-        .AsImplementedInterfaces()
-        .WithScopedLifetime()
 );
+builder.Services.AddScoped<IWeatherProvider, OpenWeatherProvider>();
+builder.Services.AddScoped<IWeatherProvider, MockWeatherProvider>();
+
 
 builder.Services.Decorate<IWeatherMediator, LoggingWeatherMediatorDecorator>();
 builder.Services.Decorate<IWeatherProvider, LoggingWeatherProviderDecorator>();
 
 using var sp = builder.Services.BuildServiceProvider();
-
 var orchestrator = sp.GetRequiredService<IWeatherMediator>();
 
 Console.WriteLine("[DEBUG] Запрашиваем погоду...");

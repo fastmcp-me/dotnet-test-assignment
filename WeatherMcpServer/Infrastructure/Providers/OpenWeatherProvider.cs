@@ -38,26 +38,76 @@ public class OpenWeatherProvider : WeatherProviderBase
 
     public override Task<IEnumerable<WeatherResult>> ParseForecastAsync(JsonElement json, string location, int days)
     {
-        var list = json.GetProperty("list")
-            .EnumerateArray()
-            .Take(days)
-            .Select(item =>
+        var groupedByDate = new Dictionary<DateTime, (double morningSum, int morningCount, double daySum, int dayCount, double eveningSum, int eveningCount)>();
+
+        foreach (var item in json.GetProperty("list").EnumerateArray())
+        {
+            var dt = DateTime.Parse(item.GetProperty("dt_txt").GetString()!);
+            var temp = item.GetProperty("main").GetProperty("temp").GetDouble();
+            var date = dt.Date;
+            var time = dt.TimeOfDay;
+
+            if (!groupedByDate.TryGetValue(date, out var stats))
+                stats = (0, 0, 0, 0, 0, 0);
+
+            if (time >= TimeSpan.FromHours(6) && time < TimeSpan.FromHours(12))
             {
-                var dateText = item.GetProperty("dt_txt").GetString();
-                var desc = item.GetProperty("weather")[0].GetProperty("description").GetString();
-                var temp = item.GetProperty("main").GetProperty("temp").GetDouble();
+                stats.morningSum += temp;
+                stats.morningCount++;
+            }
+            else if (time >= TimeSpan.FromHours(12) && time < TimeSpan.FromHours(18))
+            {
+                stats.daySum += temp;
+                stats.dayCount++;
+            }
+            else if (time >= TimeSpan.FromHours(18) && time < TimeSpan.FromHours(24))
+            {
+                stats.eveningSum += temp;
+                stats.eveningCount++;
+            }
 
-                return new WeatherResult
+            groupedByDate[date] = stats;
+        }
+
+        var results = groupedByDate
+            .OrderBy(kvp => kvp.Key)
+            .Take(days)
+            .SelectMany(kvp =>
+            {
+                var (morningSum, morningCount, daySum, dayCount, eveningSum, eveningCount) = kvp.Value;
+
+                return new[]
                 {
-                    ProviderName = Name,
-                    Location = location,
-                    Timestamp = DateTimeOffset.Parse(dateText!),
-                    Description = desc ?? string.Empty,
-                    TemperatureC = temp
+                    new WeatherResult
+                    {
+                        ProviderName = Name,
+                        Location = location,
+                        Timestamp = new DateTimeOffset(kvp.Key.AddHours(6)),
+                        Description = "Morning",
+                        TemperatureC = Math.Round(morningCount > 0 ? morningSum / morningCount : 0, 1),
+                    },
+                    new WeatherResult
+                    {
+                        ProviderName = Name,
+                        Location = location,
+                        Timestamp = new DateTimeOffset(kvp.Key.AddHours(12)),
+                        Description = "Day",
+                        TemperatureC = Math.Round(dayCount > 0 ? daySum / dayCount : 0, 1),
+                    },
+                    new WeatherResult
+                    {
+                        ProviderName = Name,
+                        Location = location,
+                        Timestamp = new DateTimeOffset(kvp.Key.AddHours(18)),
+                        Description = "Evening",
+                        TemperatureC = Math.Round(eveningCount > 0 ? eveningSum / eveningCount : 0, 1),
+                    }
                 };
-            });
+            })
+            .ToList();
 
-        return Task.FromResult(list);
+        return Task.FromResult<IEnumerable<WeatherResult>>(results);
     }
+
 }
 
