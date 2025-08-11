@@ -3,7 +3,7 @@ using WeatherMcpServer.Domain;
 
 namespace WeatherMcpServer.Infrastructure.Providers;
 
-public class MockWeatherProvider : IWeatherProvider
+public class FallbackWeatherProvider : IWeatherProvider
 {
     public string Name => "MockProvider";
     public int Weight => 0;

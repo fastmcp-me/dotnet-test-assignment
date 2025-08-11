@@ -19,14 +19,20 @@ public class McpClientTests : TestBase
         Assert.True(toolsResult.Any(), "Tools list should not be empty.");
     }
 
-    [Fact]
+    [Theory]
+    [InlineData("Almaty")]
+    [InlineData("Tashkent")]
+    [InlineData("New York")]
+    [InlineData("Miami")]
+    [InlineData("Beijing")]
+    [InlineData("London")]
     [Trait("Category", "Integration")]
-    public async Task CallToolAsync_GetCityWeather_ShouldReturnExpectedResult()
+    public async Task CallToolAsync_GetCityWeather_ShouldReturnExpectedResult(string city)
     {
         // Arrange
         await using var client = await McpClientFactory.CreateAsync(new StdioClientTransport(TransportOptions));
         var toolName = "get_city_weather";
-        var arguments = new Dictionary<string, object?> { ["city"] = "Almaty" };
+        var arguments = new Dictionary<string, object?> { ["city"] = city };
 
         // Act
         var callResult = await client.CallToolAsync(toolName, arguments);
@@ -40,14 +46,20 @@ public class McpClientTests : TestBase
         Assert.NotNull(textValue);
     }
 
-    [Fact]
+    [Theory]
+    [InlineData("Almaty", 4)]
+    [InlineData("Tashkent", 7)]
+    [InlineData("New York", 2)]
+    [InlineData("Miami", 8)]
+    [InlineData("Beijing", 5)]
+    [InlineData("London", 3)]
     [Trait("Category", "Integration")]
-    public async Task CallToolAsync_GetWeatherForecast_ShouldReturnExpectedResult()
+    public async Task CallToolAsync_GetWeatherForecast_ShouldReturnExpectedResult(string city, int days)
     {
         // Arrange
         await using var client = await McpClientFactory.CreateAsync(new StdioClientTransport(TransportOptions));
         var toolName = "get_weather_forecast";
-        var arguments = new Dictionary<string, object?> { ["city"] = "Almaty", ["days"] = 4 };
+        var arguments = new Dictionary<string, object?> { ["city"] = city, ["days"] = days };
 
         // Act
         var callResult = await client.CallToolAsync(toolName, arguments);

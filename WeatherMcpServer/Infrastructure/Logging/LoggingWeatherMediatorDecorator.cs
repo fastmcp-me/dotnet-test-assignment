@@ -17,43 +17,43 @@ namespace WeatherMcpServer.Infrastructure.Logging
 
         public async Task<Result<WeatherResult>> GetCurrentWeatherAsync(string location, CancellationToken ct = default)
         {
-            _logger.LogInformation("Запрос текущей погоды для {Location}", location);
+            _logger.LogInformation("Request current weather for {Location}", location);
             try
             {
                 var result = await _inner.GetCurrentWeatherAsync(location, ct);
 
                 if (result.Success)
-                    _logger.LogInformation("Успешно получили погоду: {Temp}°C", result.Value?.TemperatureC);
+                    _logger.LogInformation("Successfully received the weather: {Temp}°C", result.Value?.TemperatureC);
                 else
-                    _logger.LogWarning("Не удалось получить погоду: {Error}", result.Error);
+                    _logger.LogWarning("Failed to get weather: {Error}", result.Error);
 
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при получении текущей погоды для {Location}", location);
-                return Result<WeatherResult>.Fail("Ошибка при запросе погоды", ex);
+                _logger.LogError(ex, "Error getting current weather for {Location}", location);
+                return Result<WeatherResult>.Fail("Error while requesting weather", ex);
             }
         }
 
         public async Task<Result<IEnumerable<WeatherResult>>> GetForecastAsync(string location, int days = 3, CancellationToken ct = default)
         {
-            _logger.LogInformation("Запрос прогноза на {Days} дней для {Location}", days, location);
+            _logger.LogInformation("Request forecast for {Days} days for {Location}", days, location);
             try
             {
                 var result = await _inner.GetForecastAsync(location, days, ct);
 
                 if (result.Success)
-                    _logger.LogInformation("Успешно получили прогноз ({Count} записей)", result.Value?.Count());
+                    _logger.LogInformation("Successfully received forecast ({Count} records)", result.Value?.Count());
                 else
-                    _logger.LogWarning("Не удалось получить прогноз: {Error}", result.Error);
+                    _logger.LogWarning("Failed to get forecast: {Error}", result.Error);
 
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при получении прогноза для {Location}", location);
-                return Result<IEnumerable<WeatherResult>>.Fail("Ошибка при запросе прогноза", ex);
+                _logger.LogError(ex, "Error getting forecast for {Location}", location);
+                return Result<IEnumerable<WeatherResult>>.Fail("Error requesting forecast", ex);
             }
         }
     }

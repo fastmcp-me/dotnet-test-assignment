@@ -22,35 +22,35 @@ public class LoggingWeatherProviderDecorator : IWeatherProvider
 
     public async Task<WeatherResult> GetCurrentWeatherAsync(string location, CancellationToken ct = default)
     {
-        _logger.LogInformation("→ [{Provider}] Получение текущей погоды для {Location}", Name, location);
+        _logger.LogInformation("[{Provider}] Get current weather for {Location}", Name, location);
 
         try
         {
             var result = await _inner.GetCurrentWeatherAsync(location, ct);
-            _logger.LogInformation("✔ [{Provider}] Погода в {Location}: {Temp}°C, {Desc}",
+            _logger.LogInformation("[{Provider}] Weather in {Location}: {Temp}°C, {Desc}",
                 Name, location, result.TemperatureC, result.Description);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "✖ [{Provider}] Ошибка получения текущей погоды для {Location}", Name, location);
+            _logger.LogError(ex, "[{Provider}] Error getting current weather for {Location}", Name, location);
             throw;
         }
     }
 
     public async Task<IEnumerable<WeatherResult>> GetForecastAsync(string location, int days = 3, CancellationToken ct = default)
     {
-        _logger.LogInformation("→ [{Provider}] Получение прогноза на {Days} дней для {Location}", Name, days, location);
+        _logger.LogInformation("[{Provider}] Get forecast for {Days} days for {Location}", Name, days, location);
 
         try
         {
             var result = await _inner.GetForecastAsync(location, days, ct);
-            _logger.LogInformation("✔ [{Provider}] Прогноз получен ({Count} записей)", Name, result.Count());
+            _logger.LogInformation("[{Provider}] Forecast received ({Count} records)", Name, result.Count());
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "✖ [{Provider}] Ошибка получения прогноза для {Location}", Name, location);
+            _logger.LogError(ex, "[{Provider}] Error getting forecast for {Location}", Name, location);
             throw;
         }
     }

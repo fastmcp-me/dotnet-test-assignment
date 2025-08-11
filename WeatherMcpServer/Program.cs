@@ -55,19 +55,11 @@ builder.Services.Scan(scan => scan
         .WithScopedLifetime()
 );
 builder.Services.AddScoped<IWeatherProvider, OpenWeatherProvider>();
-builder.Services.AddScoped<IWeatherProvider, MockWeatherProvider>();
+builder.Services.AddScoped<IWeatherProvider, FallbackWeatherProvider>();
 
 
 builder.Services.Decorate<IWeatherMediator, LoggingWeatherMediatorDecorator>();
 builder.Services.Decorate<IWeatherProvider, LoggingWeatherProviderDecorator>();
-
-using var sp = builder.Services.BuildServiceProvider();
-var orchestrator = sp.GetRequiredService<IWeatherMediator>();
-
-Console.WriteLine("[DEBUG] Запрашиваем погоду...");
-var result = await orchestrator.GetForecastAsync("Almaty", 4);
-var temp = result.Value!.ToList();
-
 
 // Add the MCP services: the transport to use (stdio) and the tools to register.
 builder.Services
