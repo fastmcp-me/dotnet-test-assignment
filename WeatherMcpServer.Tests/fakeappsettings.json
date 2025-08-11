@@ -1,0 +1,10 @@
+{
+  "TransportOptions": {
+    "Name": "WeatherMcpServer",
+    "Command": "dotnet",
+    "Arguments": [
+      "run",
+      "--project"
+    ]
+  }
+}
