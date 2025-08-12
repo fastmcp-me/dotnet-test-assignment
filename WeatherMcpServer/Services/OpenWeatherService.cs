@@ -15,7 +15,10 @@ public sealed class OpenWeatherService(
 {
     private readonly string _apiKey = options.Value.ApiKey;
 
-    public async Task<string> GetCurrentWeatherDescription(string city, string? countryCode = null)
+    public async Task<string> GetCurrentWeatherDescription(
+        string city, 
+        string? countryCode = null,
+        CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(city))
             throw new ArgumentException("City name must be provided.", nameof(city));
@@ -27,7 +30,7 @@ public sealed class OpenWeatherService(
 
         try
         {
-            var response = await client.GetJsonAsync(url);
+            var response = await client.GetJsonAsync(url, ct);
             return response.RootElement.ToCurrentWeatherDescription();
         }
         catch (Exception ex)
@@ -39,7 +42,8 @@ public sealed class OpenWeatherService(
 
     public async Task<string> Get5Day3HourStepForecast(
         string city,
-        string? countryCode = null)
+        string? countryCode = null,
+        CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(city))
             throw new ArgumentException("City name must be provided.", nameof(city));
@@ -51,7 +55,7 @@ public sealed class OpenWeatherService(
 
         try
         {
-            var response = await client.GetJsonAsync(url);
+            var response = await client.GetJsonAsync(url, ct);
             return response.RootElement.ToDailyForecastDescription(3);
         }
         catch (Exception ex)
@@ -61,12 +65,15 @@ public sealed class OpenWeatherService(
         }
     }
 
-    public async Task<string> GetWeatherAlertsDescription(string city, string? countryCode = null)
+    public async Task<string> GetWeatherAlertsDescription(
+        string city, 
+        string? countryCode = null,
+        CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(city))
             throw new ArgumentException("City name must be provided.", nameof(city));
 
-        var geo = await GetCoordinates(city, countryCode);
+        var geo = await GetCoordinates(city, countryCode, ct);
 
         var url =$"/data/3.0/onecall?lat={geo.Latitude}&lon={geo.Longitude}&appid={_apiKey}&exclude=current,minutely,hourly,daily&units=metric&lang=en";
 
@@ -74,7 +81,7 @@ public sealed class OpenWeatherService(
 
         try
         {
-            var response = await client.GetJsonAsync(url);
+            var response = await client.GetJsonAsync(url, ct);
             return response.RootElement.ToAlertsDescription();
         }
         catch (Exception ex)
@@ -84,7 +91,10 @@ public sealed class OpenWeatherService(
         }
     }
 
-    private async Task<GeoCoordinate> GetCoordinates(string city, string? countryCode = null)
+    private async Task<GeoCoordinate> GetCoordinates(
+        string city, 
+        string? countryCode = null,
+        CancellationToken ct = default)
     {
         var location = GetLocationQuery(city, countryCode);
         var url = $"/geo/1.0/direct?q={location}&limit=1&appid={_apiKey}";
@@ -93,7 +103,7 @@ public sealed class OpenWeatherService(
 
         try
         {
-            var response = await client.GetJsonAsync(url);
+            var response = await client.GetJsonAsync(url, ct);
             return response.RootElement.GetGeoCoordinate();
         }
         catch (Exception ex)

@@ -6,7 +6,7 @@ namespace WeatherMcpServer.Presenters;
 
 public static class OpenWeatherPresenter
 {
-    private static JsonSchema _geoSchema = JsonSchema.FromFile("Schemas/OpenWeather/geo-direct.json");
+    private static readonly JsonSchema _geoSchema = JsonSchema.FromFile("Schemas/OpenWeather/geo-direct.json");
 
     public static GeoCoordinate GetGeoCoordinate(this JsonElement geoRoot)
     {

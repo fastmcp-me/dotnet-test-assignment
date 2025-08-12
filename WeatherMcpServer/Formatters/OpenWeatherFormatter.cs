@@ -6,7 +6,7 @@ namespace WeatherMcpServer.Formatters;
 
 public static class OpenWeatherFormatter
 {
-    private static JsonSchema _currentWeatherSchema = JsonSchema.FromFile("Schemas/OpenWeather/current-weather.json");
+    private static readonly JsonSchema _currentWeatherSchema = JsonSchema.FromFile("Schemas/OpenWeather/current-weather.json");
 
     public static string ToCurrentWeatherDescription(this JsonElement currentWeatherRoot)
     {
@@ -21,7 +21,7 @@ public static class OpenWeatherFormatter
         return $"{date}: {description}, temperature: {temp}°C, pressure: {pressure} hPa.";
     }
 
-    private static JsonSchema _forecastWeatherSchema = JsonSchema.FromFile("Schemas/OpenWeather/forecast-5day-3hour.json");
+    private static readonly JsonSchema _forecastWeatherSchema = JsonSchema.FromFile("Schemas/OpenWeather/forecast-5day-3hour.json");
 
     public static string ToDailyForecastDescription(this JsonElement forecastRoot, int hourStep)
     {
@@ -55,7 +55,7 @@ public static class OpenWeatherFormatter
         return string.Join("\n", dailyDescriptions);
     }
 
-    private static JsonSchema _forecastItemSchema = JsonSchema.FromFile("Schemas/OpenWeather/forecast-item.json");
+    private static readonly JsonSchema _forecastItemSchema = JsonSchema.FromFile("Schemas/OpenWeather/forecast-item.json");
 
     private static string ToForecastItemDescription(this JsonElement forecastItem)
     {
@@ -70,7 +70,7 @@ public static class OpenWeatherFormatter
         return $"{date}: {description}, temperature: {temp}°C, pressure: {pressure} hPa.";
     }
 
-    private static JsonSchema _alertsSchema = JsonSchema.FromFile("Schemas/OpenWeather/weather-alerts.json");
+    private static readonly JsonSchema _alertsSchema = JsonSchema.FromFile("Schemas/OpenWeather/weather-alerts.json");
 
     public static string ToAlertsDescription(this JsonElement alertRoot)
     {

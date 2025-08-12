@@ -1,4 +1,12 @@
 {
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "openweather_api_key",
+      "description": "Api key from your https://api.openweathermap.org/ account.",
+      "password": true
+    }
+  ],
   "servers": {
     "WeatherMcpServer": {
       "type": "stdio",
@@ -10,7 +18,16 @@
       ],
       "env": {
         "OpenWeatherOptions__BaseUrl": "https://api.openweathermap.org/",
-        "OpenWeatherOptions__ApiKey": ""
+        "OpenWeatherOptions__ApiKey": "${input:openweather_api_key}"
+      }
+    },
+    "OKtol.WeatherMcpServer": {
+      "type": "stdio",
+      "command": "dnx",
+      "args": [ "OKtol.WeatherMcpServer@", "--yes" ],
+      "env": {
+        "OpenWeatherOptions__BaseUrl": "https://api.openweathermap.org/",
+        "OpenWeatherOptions__ApiKey": "${input:openweather_api_key}"
       }
     }
   }

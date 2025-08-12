@@ -1,27 +1,22 @@
 ﻿using Humanizer;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Text.Json;
-using WeatherMcpServer.Options;
 using WeatherMcpServer.Presenters;
 namespace WeatherMcpServer.Clients;
 
 public class OpenWeatherHttpClient(
     HttpClient httpClient,
-    IOptions<OpenWeatherOptions> options,
     ILogger<OpenWeatherHttpClient> logger)
 {
-    private readonly string _openWeatherBaseUrl = options.Value.BaseUrl;
-
-    public async Task<JsonDocument> GetJsonAsync(string url)
+    public async Task<JsonDocument> GetJsonAsync(string url, CancellationToken ct = default)
     {
-        var fullUrl = _openWeatherBaseUrl + url;
+        var fullUrl = httpClient.BaseAddress + url;
         var maskedUrl = MaskApiKey(fullUrl);
 
         logger.LogDebug("Making GET request to {MaskedUrl}", maskedUrl);
 
-        var response = await httpClient.GetAsync(fullUrl);
-        var content = await response.Content.ReadAsStringAsync();
+        var response = await httpClient.GetAsync(fullUrl, ct);
+        var content = await response.Content.ReadAsStringAsync(ct);
 
         logger.LogDebug("Response from {MaskedUrl}: {Content}", maskedUrl, content);
 

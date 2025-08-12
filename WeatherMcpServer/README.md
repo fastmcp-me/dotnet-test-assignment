@@ -114,7 +114,7 @@ Package name: [OKtol.WeatherMcpServer](https://www.nuget.org/packages/OKtol.Weat
 
 ## Testing the MCP Server
 
-Once configured, you can ask Copilot Chat for a weather, for example, `What is the current weather in London?`. It should prompt you to use the `GetCurrentWeather` tool on the `WeatherMcpServer` MCP server and show you the results.
+Once configured, you can ask Copilot Chat for a weather, for example, `What is the current weather in London? #get_current_weather`. It should prompt you to use the `GetCurrentWeather` tool on the `WeatherMcpServer` MCP server and show you the results.
 
 ## More information
 
@@ -130,5 +130,5 @@ Refer to the VS Code or Visual Studio documentation for more information on conf
 - [Use MCP servers in Visual Studio (Preview)](https://learn.microsoft.com/visualstudio/ide/mcp-servers)
 
 👨‍💻 Author
-Built by OKtol <br>
+Built by OKtol 
 Repo: https://github.com/OKtol/dotnet-test-assignment
