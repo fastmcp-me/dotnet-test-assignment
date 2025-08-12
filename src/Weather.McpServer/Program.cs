@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using WeatherMcpServer.Tools;
 using Weather.Infrastructure;
+using Weather.UseCases;
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -16,6 +17,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog();
 builder.AddWeatherFeature();
+builder.AddWeatherUseCases();
 
 // Add the MCP services: the transport to use (stdio) and the tools to register.
 builder.Services

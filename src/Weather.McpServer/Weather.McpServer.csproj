@@ -1,11 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <RollForward>Major</RollForward>
         <OutputType>Exe</OutputType>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
 
         <!-- Set up the NuGet package to be an MCP server -->
         <PackAsTool>true</PackAsTool>
@@ -57,6 +53,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Weather.Infrastructure\Weather.Infrastructure.csproj" />
+      <ProjectReference Include="..\Weather.UseCases\Weather.UseCases.csproj" />
     </ItemGroup>
 
 </Project>

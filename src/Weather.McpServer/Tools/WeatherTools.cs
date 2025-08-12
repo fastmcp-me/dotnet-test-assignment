@@ -1,12 +1,13 @@
 using Weather.Core.Interfaces;
-using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
-using Weather.Core.Exceptions;
+using Weather.UseCases.Forecast.GetCityWeather;
+using Weather.UseCases.Forecast.GetCityForecast;
+using Weather.UseCases.Forecast.GetAlert;
 
 namespace WeatherMcpServer.Tools;
 
-public class WeatherTools(IWeatherForecast forecast, ILogger<WeatherTools> logger)
+public class WeatherTools(IUseCaseDispatcher dispatcher)
 {
     [McpServerTool]
     [Description("Describes random weather in the provided city.")]
@@ -36,19 +37,7 @@ public class WeatherTools(IWeatherForecast forecast, ILogger<WeatherTools> logge
 		CancellationToken cancellationToken = default
 		)
     {
-		try
-		{
-			var weather = await forecast.GetCurrentWeatherByCityAsync(city, countryCode, stateCode, cancellationToken);
-
-			return $"The current weather in {weather.City} is {weather.WeatherCondition} with a temperature of {weather.Temperature}°C. " +
-				$"Data retrieved at {weather.Timestamp:HH:mm:ss} UTC.";
-
-		} catch (WeatherArgumentException ex)
-		{
-			logger.LogError(ex, "Error getting weather for {City}", city);
-
-			return $"Error getting weather for {city}: {ex.Message}";
-		}
+		return await dispatcher.Send(new GetCityWeatherRequest(city, countryCode, stateCode), cancellationToken);
     }
 
 	[McpServerTool]
@@ -61,21 +50,9 @@ public class WeatherTools(IWeatherForecast forecast, ILogger<WeatherTools> logge
 		CancellationToken cancellationToken = default
 		)
     {
-		try
-		{
-			var weather = await forecast.GetWeatherForecastByCityAsync(city, date, countryCode, stateCode, cancellationToken);
-
-			return $"The weather forecast for {weather.City} on {date:yyyy-MM-dd} is {weather.WeatherCondition} with a temperature of {weather.Temperature}°C. " +
-				$"Data retrieved at {weather.Timestamp:HH:mm:ss} UTC.";
-
-		}
-		catch (WeatherArgumentException ex)
-		{
-			logger.LogError(ex, "Error getting weather for {City}", city);
-
-			return $"Error getting weather for {city}: {ex.Message}";
-		}
+		return await dispatcher.Send(new GetCityForecastRequest(city, date, countryCode, stateCode), cancellationToken);
 	}
+
 	[McpServerTool]
 	[Description("Returns weather alerts for a location. ")]
 	public async Task<string> GetWeatherAlerts(
@@ -85,18 +62,6 @@ public class WeatherTools(IWeatherForecast forecast, ILogger<WeatherTools> logge
 		CancellationToken cancellationToken = default
 		)
     {
-
-		try
-		{
-			var alert = await forecast.GetWeatherAlertAsync(latitude, longitude, date, cancellationToken);
-
-			return $"The alert for coordinates ({latitude}, {longitude}) on {date:yyyy-MM-dd} is {alert.AlertLevel.ToString()} \"{alert.Event}\" with a temperature of {alert.Temperature}°C. ";
-		}
-		catch (WeatherArgumentException ex)
-		{
-			logger.LogError(ex, "Error getting alert for coordinates ({lat}, {lon})", latitude, longitude);
-
-			return $"Error getting alert for coordinates ({latitude}, {longitude})";
-		}
+		return await dispatcher.Send(new GetAlertRequest(latitude, longitude, date), cancellationToken);
 	}
 }
