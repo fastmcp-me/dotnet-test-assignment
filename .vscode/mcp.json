@@ -1,0 +1,20 @@
+//.vscode/mcp.json
+{
+    "servers": {
+        "simple-mcp-server": {
+            "type": "stdio",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/src/Weather.McpServer/Weather.McpServer.csproj",
+                "--configuration",
+                "Debug"
+            ],
+            "env": {
+                "DOTNET_ENVIRONMENT": "Development"
+            },
+            "cwd": "${workspaceFolder}/artifacts/bin/Weather.McpServer/debug",
+        }
+    }
+}

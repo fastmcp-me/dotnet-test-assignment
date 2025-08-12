@@ -1,0 +1,19 @@
+{
+	"$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v1.0.0/rc.schema.json",
+	"plugins": [
+		{
+			"name": "MockResponsePlugin",
+			"enabled": true,
+			"pluginPath": "~appFolder/plugins/DevProxy.Plugins.dll",
+			"configSection": "mockResponsePlugin"
+		}
+	],
+	"urlsToWatch": [
+		"https://api.openweathermap.org/data/2.5/*"
+	],
+	"mockResponsePlugin": {
+		"$schema": "https://raw.githubusercontent.com/dotnet/dev-proxy/main/schemas/v1.0.0/mockresponseplugin.schema.json",
+		"mocksFile": "mocks.json"
+	},
+	"asSystemProxy": false
+}
