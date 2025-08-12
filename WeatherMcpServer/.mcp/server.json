@@ -1,18 +1,23 @@
 {
-  "$schema": "https://modelcontextprotocol.io/schemas/draft/2025-07-09/server.json",
-  "description": "<your description here>",
-  "name": "io.github.<your GitHub username here>/<your repo name>",
+  "description": "Real Weather MCP Server - Provides real-time weather data through OpenWeatherMap API integration",
+  "name": "io.github.fastmcp/weather-mcp-server",
   "packages": [
     {
       "registry_name": "nuget",
-      "name": "<your package ID here>",
+      "name": "WeatherMcpServer",
       "version": "0.1.0-beta",
       "package_arguments": [],
-      "environment_variables": []
+      "environment_variables": [
+        {
+          "name": "OPENWEATHER_API_KEY",
+          "description": "OpenWeatherMap API key for accessing weather data",
+          "required": true
+        }
+      ]
     }
   ],
   "repository": {
-    "url": "https://github.com/<your GitHub username here>/<your repo name>",
+    "url": "https://github.com/fastmcp/dotnet-test-assignment",
     "source": "github"
   },
   "version_detail": {

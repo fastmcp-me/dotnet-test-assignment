@@ -1,25 +1,91 @@
-# MCP Server
+# Real Weather MCP Server
 
-This README was created using the C# MCP server project template. It demonstrates how you can easily create an MCP server using C# and publish it as a NuGet package.
+A comprehensive MCP (Model Context Protocol) server that provides real-time weather data through AI assistants like Claude. This server integrates with the OpenWeatherMap API to deliver accurate current weather conditions, forecasts, and weather alerts.
 
-See [aka.ms/nuget/mcp/guide](https://aka.ms/nuget/mcp/guide) for the full guide.
+## Features
 
-Please note that this template is currently in an early preview stage. If you have feedback, please take a [brief survey](http://aka.ms/dotnet-mcp-template-survey).
+- **🌤️ Current Weather**: Get real-time weather conditions for any city worldwide
+- **📅 Weather Forecast**: Retrieve up to 5-day weather forecasts with detailed information
+- **⚠️ Weather Alerts**: Access weather warnings and alerts for specific locations (bonus feature)
+- **🌍 Global Coverage**: Support for cities worldwide with country code specification
+- **🔧 Robust Error Handling**: Comprehensive error handling and logging
+- **📊 Rich Formatting**: Beautiful, formatted weather reports with emojis and structured data
 
-## Checklist before publishing to NuGet.org
+## Prerequisites
 
-- Test the MCP server locally using the steps below.
-- Update the package metadata in the .csproj file, in particular the `<PackageId>`.
-- Update `.mcp/server.json` to declare your MCP server's inputs.
-  - See [configuring inputs](https://aka.ms/nuget/mcp/guide/configuring-inputs) for more details.
-- Pack the project using `dotnet pack`.
+- .NET 8.0 or later
+- OpenWeatherMap API key (free tier available)
 
-The `bin/Release` directory will contain the package file (.nupkg), which can be [published to NuGet.org](https://learn.microsoft.com/nuget/nuget-org/publish-a-package).
+## Setup Instructions
 
-## Developing locally
+### 1. Get OpenWeatherMap API Key
 
-To test this MCP server from source code (locally) without using a built MCP server package, you can configure your IDE to run the project directly using `dotnet run`.
+1. Visit [OpenWeatherMap](https://openweathermap.org/api)
+2. Sign up for a free account
+3. Navigate to API Keys section
+4. Copy your API key
 
+### 2. Configure Environment Variable
+
+Set the `OPENWEATHER_API_KEY` environment variable:
+
+**Windows (PowerShell):**
+```powershell
+$env:OPENWEATHER_API_KEY="your_api_key_here"
+```
+
+**Windows (Command Prompt):**
+```cmd
+set OPENWEATHER_API_KEY=your_api_key_here
+```
+
+**Linux/macOS:**
+```bash
+export OPENWEATHER_API_KEY="your_api_key_here"
+```
+
+### 3. Build and Run
+
+```bash
+dotnet build
+dotnet run
+```
+
+## Available Tools
+
+### GetCurrentWeather
+Gets current weather conditions for a specified city.
+
+**Parameters:**
+- `city` (required): The city name to get weather for
+- `countryCode` (optional): Country code (e.g., 'US', 'UK', 'RU')
+
+**Example:** "What's the current weather in Moscow, RU?"
+
+### GetWeatherForecast
+Gets weather forecast for a specified city (up to 5 days).
+
+**Parameters:**
+- `city` (required): The city name to get weather forecast for
+- `countryCode` (optional): Country code (e.g., 'US', 'UK', 'RU')
+- `days` (optional): Number of days for forecast (1-5, default: 3)
+
+**Example:** "Give me a 5-day weather forecast for London, UK"
+
+### GetWeatherAlerts
+Gets weather alerts and warnings for a specified city.
+
+**Parameters:**
+- `city` (required): The city name to get weather alerts for
+- `countryCode` (optional): Country code (e.g., 'US', 'UK', 'RU')
+
+**Example:** "Are there any weather alerts for Miami, US?"
+
+## Developing Locally
+
+To test this MCP server from source code locally, configure your IDE to run the project directly using `dotnet run`.
+
+**VS Code Configuration (`.vscode/mcp.json`):**
 ```json
 {
   "servers": {
@@ -29,8 +95,11 @@ To test this MCP server from source code (locally) without using a built MCP ser
       "args": [
         "run",
         "--project",
-        "<PATH TO PROJECT DIRECTORY>"
-      ]
+        "path/to/WeatherMcpServer"
+      ],
+      "env": {
+        "OPENWEATHER_API_KEY": "your_api_key_here"
+      }
     }
   }
 }
@@ -38,7 +107,10 @@ To test this MCP server from source code (locally) without using a built MCP ser
 
 ## Testing the MCP Server
 
-Once configured, you can ask Copilot Chat for a random number, for example, `Give me 3 random numbers`. It should prompt you to use the `get_random_number` tool on the `WeatherMcpServer` MCP server and show you the results.
+Once configured, you can test the weather tools by asking questions like:
+- "What's the current weather in Tokyo?"
+- "Give me a 3-day forecast for Paris, FR"
+- "Are there any weather alerts for New York, US?"
 
 ## Publishing to NuGet.org
 
