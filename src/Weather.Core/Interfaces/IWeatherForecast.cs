@@ -1,6 +1,6 @@
-using Core.Dto;
+using Weather.Core.Dto;
 
-namespace Core;
+namespace Weather.Core.Interfaces;
 
 public interface IWeatherForecast
 {

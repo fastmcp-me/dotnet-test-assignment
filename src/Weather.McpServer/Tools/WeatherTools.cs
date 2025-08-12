@@ -1,8 +1,8 @@
-using Core;
+using Weather.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
-using System.Threading;
+using Weather.Core.Exceptions;
 
 namespace WeatherMcpServer.Tools;
 

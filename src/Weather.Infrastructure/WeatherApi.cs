@@ -1,17 +1,18 @@
-using Core;
-using Core.Dto;
+using Weather.Core;
+using Weather.Core.Exceptions;
+using Weather.Core.Interfaces;
+using Weather.Core.Dto;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Text.Json;
-using WeatherAPI.Configuration;
 
-namespace WeatherAPI;
+namespace Weather.Infrastructure;
 
-internal class WeatherApi(IOptions<OpenWeatherMapOptions> options, HttpClient httpClient, ILogger<WeatherApi> logger) : IWeatherForecast
+internal class WeatherApi(IOptions<WeatherConfiguration> options, HttpClient httpClient, ILogger<WeatherApi> logger) : IWeatherForecast
 {
-	private OpenWeatherMapOptions Options => options.Value;
+	private WeatherConfiguration Options => options.Value;
 
 	private Dictionary<string, string?> DefaultQueryParams(string city, string? countryCode = null, string? stateCode = null) => new()
 	{

@@ -1,4 +1,4 @@
-namespace Core.Dto;
+namespace Weather.Core.Dto;
 
 public record WeatherDto(
 	string City,

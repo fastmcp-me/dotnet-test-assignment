@@ -1,4 +1,4 @@
-namespace Core;
+namespace Weather.Core;
 
 public sealed class AlertLevel
 {

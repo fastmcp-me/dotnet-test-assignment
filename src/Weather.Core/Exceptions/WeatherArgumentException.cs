@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Core;
+namespace Weather.Core.Exceptions;
 
 [Serializable]
 public class WeatherArgumentException : ArgumentException

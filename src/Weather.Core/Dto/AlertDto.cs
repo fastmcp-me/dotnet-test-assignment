@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Core.Dto;
+namespace Weather.Core.Dto;
 
 public record AlertDto(
 	double Temperature,

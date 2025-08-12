@@ -15,12 +15,14 @@
                 "args": [
                     "run",
                     "--project",
-                    "${workspaceFolder}/WeatherMcpServer/WeatherMcpServer.csproj"
+                    "${workspaceFolder}/src/Weather.McpServer/Weather.McpServer.csproj",
+                    "--configuration",
+                    "Debug"
                 ],
                 "env": {
-                    "ASPNETCORE_ENVIRONMENT": "Development"
+                    "DOTNET_ENVIRONMENT": "Development"
                 },
-                "cwd": "${workspaceFolder}/artifacts/bin/WeatherMcpServer/debug",
+                "cwd": "${workspaceFolder}/artifacts/bin/Weather.McpServer/debug",
             }
         }
     }
