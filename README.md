@@ -1,36 +1,63 @@
-WeatherMcpServer
-WeatherMcpServer is a Model Context Protocol (MCP) server that provides real-time weather data, forecasts, and alerts for any city in the world.
-It integrates with the OpenWeather API and exposes weather functionality as MCP tools, making it easy to integrate into MCP-compatible clients.
+# 🌦 WeatherMcpServer
 
-Features
-Current Weather – Get temperature, humidity, and description of current conditions.
+**WeatherMcpServer** is a **Model Context Protocol (MCP) server** that provides real-time weather data, multi-day forecasts, and official alerts for cities worldwide.  
+It integrates with the **OpenWeather API** and exposes weather functionality as **MCP tools** for use in any MCP-compatible client.
 
-Forecast – Retrieve multi-day weather forecasts.
+---
 
-Weather Alerts – Receive official weather alerts with severity levels (advisory, watch, warning).
+## ✨ Features
 
-Caching – Uses in-memory caching to reduce redundant API calls.
+- **🌡 Current Weather** – Temperature, humidity, and condition description.
+- **📅 Multi-Day Forecasts** – Configurable number of days.
+- **🚨 Weather Alerts** – Official alerts with severity levels: *Advisory*, *Watch*, *Warning*.
+- **⚡ Caching** – In-memory cache to reduce redundant API calls.
+- **🛡 Error Handling** – Resilient to network failures and API issues.
+- **🔌 MCP Integration** – Runs as a standalone MCP server over `stdio`.
 
-Error Handling – Graceful handling of service errors and network issues.
+---
 
-Integration Ready – Works as a standalone MCP server via stdio transport.
+## 🏗 Architecture
 
-Architecture Overview
-Presentation Layer
-Hosts the MCP server and registers weather tools.
 
-Application Layer
-Contains the WeatherService orchestrating weather provider calls, caching, and combining results.
+- **Presentation Layer**  
+  Runs the MCP server and registers weather tools.
+  
+- **Application Layer**  
+  Orchestrates provider calls, applies caching, and combines results.
+  
+- **Infrastructure Layer**  
+  Implements `IWeatherProvider` using OpenWeather REST API.
+  
+- **Domain Layer**  
+  Defines `Location`, `WeatherInfo`, `WeatherForecast`, `WeatherAlert`, etc.
 
-Infrastructure Layer
-Implements IWeatherProvider using the OpenWeather REST API, mapping responses to domain models.
+---
 
-Domain Layer
-Defines core entities like Location, WeatherInfo, WeatherForecast, and WeatherAlert.
+## 🛠 MCP Tools
 
-MCP Tools
-GetCurrentWeather(city, countryCode?) – Returns current weather conditions.
+| Tool Name            | Description |
+|----------------------|-------------|
+| `GetCurrentWeather`  | Returns current temperature, humidity, and conditions. |
+| `GetWeatherForecast` | Returns weather forecast for a given number of days. |
+| `GetWeatherAlerts`   | Returns active weather alerts with severity info. |
 
-GetWeatherForecast(city, countryCode?, days) – Returns forecast for the specified number of days.
+---
 
-GetWeatherAlerts(city, countryCode?) – Returns any active weather alerts.
+## ⚙️ Requirements
+
+- [.NET 8.0+](https://dotnet.microsoft.com/en-us/download)
+- [OpenWeather API key](https://openweathermap.org/api) (free or paid)
+- MCP-compatible client for integration
+
+---
+
+## 🔑 Configuration
+
+Add your OpenWeather API key to `appsettings.json`:
+
+```json
+{
+  "OpenWeather": {
+    "ApiKey": "YOUR_API_KEY_HERE"
+  }
+}
