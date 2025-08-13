@@ -1,0 +1,419 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "https://api.openweathermap.org/data/3.0/onecall",
+  "type": "object",
+  "properties": {
+    "lat": {
+      "type": "number"
+    },
+    "lon": {
+      "type": "number"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "timezone_offset": {
+      "type": "number"
+    },
+    "current": {
+      "type": "object",
+      "properties": {
+        "dt": {
+          "type": "number"
+        },
+        "sunrise": {
+          "type": "number"
+        },
+        "sunset": {
+          "type": "number"
+        },
+        "temp": {
+          "type": "number"
+        },
+        "feels_like": {
+          "type": "number"
+        },
+        "pressure": {
+          "type": "number"
+        },
+        "humidity": {
+          "type": "number"
+        },
+        "dew_point": {
+          "type": "number"
+        },
+        "uvi": {
+          "type": "number"
+        },
+        "clouds": {
+          "type": "number"
+        },
+        "visibility": {
+          "type": "number"
+        },
+        "wind_speed": {
+          "type": "number"
+        },
+        "wind_deg": {
+          "type": "number"
+        },
+        "wind_gust": {
+          "type": "number"
+        },
+        "weather": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "main": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "main",
+              "description",
+              "icon"
+            ]
+          }
+        }
+      },
+      "required": [
+        "dt",
+        "sunrise",
+        "sunset",
+        "temp",
+        "feels_like",
+        "pressure",
+        "humidity",
+        "dew_point",
+        "uvi",
+        "clouds",
+        "visibility",
+        "wind_speed",
+        "wind_deg",
+        "wind_gust",
+        "weather"
+      ]
+    },
+    "minutely": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dt": {
+            "type": "number"
+          },
+          "precipitation": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "dt",
+          "precipitation"
+        ]
+      }
+    },
+    "hourly": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dt": {
+            "type": "number"
+          },
+          "temp": {
+            "type": "number"
+          },
+          "feels_like": {
+            "type": "number"
+          },
+          "pressure": {
+            "type": "number"
+          },
+          "humidity": {
+            "type": "number"
+          },
+          "dew_point": {
+            "type": "number"
+          },
+          "uvi": {
+            "type": "number"
+          },
+          "clouds": {
+            "type": "number"
+          },
+          "visibility": {
+            "type": "number"
+          },
+          "wind_speed": {
+            "type": "number"
+          },
+          "wind_deg": {
+            "type": "number"
+          },
+          "wind_gust": {
+            "type": "number"
+          },
+          "weather": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "main": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "main",
+                "description",
+                "icon"
+              ]
+            }
+          },
+          "pop": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "dt",
+          "temp",
+          "feels_like",
+          "pressure",
+          "humidity",
+          "dew_point",
+          "uvi",
+          "clouds",
+          "visibility",
+          "wind_speed",
+          "wind_deg",
+          "wind_gust",
+          "weather",
+          "pop"
+        ]
+      }
+    },
+    "daily": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dt": {
+            "type": "number"
+          },
+          "sunrise": {
+            "type": "number"
+          },
+          "sunset": {
+            "type": "number"
+          },
+          "moonrise": {
+            "type": "number"
+          },
+          "moonset": {
+            "type": "number"
+          },
+          "moon_phase": {
+            "type": "number"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "temp": {
+            "type": "object",
+            "properties": {
+              "day": {
+                "type": "number"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              },
+              "night": {
+                "type": "number"
+              },
+              "eve": {
+                "type": "number"
+              },
+              "morn": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "day",
+              "min",
+              "max",
+              "night",
+              "eve",
+              "morn"
+            ]
+          },
+          "feels_like": {
+            "type": "object",
+            "properties": {
+              "day": {
+                "type": "number"
+              },
+              "night": {
+                "type": "number"
+              },
+              "eve": {
+                "type": "number"
+              },
+              "morn": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "day",
+              "night",
+              "eve",
+              "morn"
+            ]
+          },
+          "pressure": {
+            "type": "number"
+          },
+          "humidity": {
+            "type": "number"
+          },
+          "dew_point": {
+            "type": "number"
+          },
+          "wind_speed": {
+            "type": "number"
+          },
+          "wind_deg": {
+            "type": "number"
+          },
+          "wind_gust": {
+            "type": "number"
+          },
+          "weather": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "main": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "icon": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "main",
+                "description",
+                "icon"
+              ]
+            }
+          },
+          "clouds": {
+            "type": "number"
+          },
+          "pop": {
+            "type": "number"
+          },
+          "rain": {
+            "type": "number"
+          },
+          "uvi": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "dt",
+          "sunrise",
+          "sunset",
+          "moonrise",
+          "moonset",
+          "moon_phase",
+          "summary",
+          "temp",
+          "feels_like",
+          "pressure",
+          "humidity",
+          "dew_point",
+          "wind_speed",
+          "wind_deg",
+          "wind_gust",
+          "weather",
+          "clouds",
+          "pop",
+          "rain",
+          "uvi"
+        ]
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sender_name": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string"
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {}
+          }
+        },
+        "required": [
+          "sender_name",
+          "event",
+          "start",
+          "end",
+          "description",
+          "tags"
+        ]
+      }
+    }
+  },
+  "required": [
+    "lat",
+    "lon",
+    "timezone",
+    "timezone_offset",
+    "alerts"
+  ]
+}

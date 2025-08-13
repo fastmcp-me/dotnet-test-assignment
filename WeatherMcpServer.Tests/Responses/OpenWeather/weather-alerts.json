@@ -1,0 +1,18 @@
+{
+  "lat": 33.44,
+  "lon": -94.04,
+  "timezone": "America/Chicago",
+  "timezone_offset": -18000,
+  "alerts": [
+    {
+      "sender_name": "NWS Philadelphia - Mount Holly (New Jersey, Delaware, Southeastern Pennsylvania)",
+      "event": "Small Craft Advisory",
+      "start": 1684952747,
+      "end": 1684988747,
+      "description": "...SMALL CRAFT ADVISORY",
+      "tags": [
+
+      ]
+    }
+  ]
+}

@@ -1,26 +1,110 @@
-using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
+using System.ComponentModel;
+using WeatherMcpServer.Services;
 
 namespace WeatherMcpServer.Tools;
 
-public class WeatherTools
+public class WeatherTools(
+    OpenWeatherService weatherService,
+    ILogger<WeatherTools> logger)
 {
     [McpServerTool]
-    [Description("Describes random weather in the provided city.")]
-    public string GetCityWeather(
-        [Description("Name of the city to return weather for")] string city)
+    [Description("Get current weather for a specified location.")]
+    public async Task<string> GetCurrentWeather(
+        [Description("The city name (e.g., 'London')")] string city,
+        [Description("Optional country code (e.g., 'GB')")] string? countryCode = null,
+        CancellationToken ct = default)
     {
-        // Read the environment variable during tool execution.
-        // Alternatively, this could be read during startup and passed via IOptions dependency injection
-        var weather = Environment.GetEnvironmentVariable("WEATHER_CHOICES");
-        if (string.IsNullOrWhiteSpace(weather))
+        if (string.IsNullOrWhiteSpace(city))
+            return "City name must be provided.";
+
+        logger.LogDebug("Calling GetCurrentWeather for city {City}, country {Country}", city, countryCode);
+        try
         {
-            weather = "balmy,rainy,stormy";
+            var description = await weatherService.GetCurrentWeatherDescription(city, countryCode, ct);
+            return $"Current weather in {city}{(countryCode is not null ? $", {countryCode}" : "")}: {description}";
         }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for GetCurrentWeather: {Message}", ex.Message);
+            return ex.Message;
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogWarning(ex, "API error for GetCurrentWeather: {Message}", ex.Message);
+            return $"Could not retrieve current weather for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get current weather for {City}, {Country}", city, countryCode);
+            return $"Could not retrieve current weather for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
+        }
+    }
 
-        var weatherChoices = weather.Split(",");
-        var selectedWeatherIndex =  Random.Shared.Next(0, weatherChoices.Length);
+    [McpServerTool]
+    [Description("Get weather forecast for a specified location.")]
+    public async Task<string> GetWeatherForecast(
+        [Description("The city name (e.g., 'London')")] string city,
+        [Description("Optional country code (e.g., 'GB')")] string? countryCode = null,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(city))
+            return "City name must be provided.";
 
-        return $"The weather in {city} is {weatherChoices[selectedWeatherIndex]}.";
+        logger.LogDebug("Calling GetWeatherForecast for city {City}, country {Country}", city, countryCode);
+        try
+        {
+            var dailyDescriptions = await weatherService.Get5Day3HourStepForecast(city, countryCode, ct);
+            return $"Weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}:\n" + dailyDescriptions;
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for GetWeatherForecast: {Message}", ex.Message);
+            return ex.Message;
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogWarning(ex, "API error for GetWeatherForecast: {Message}", ex.Message);
+            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get weather forecast for {City}, {Country}", city, countryCode);
+            return $"Could not retrieve weather forecast for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
+        }
+    }
+
+    [McpServerTool]
+    [Description("Get weather alerts/warnings for a location.")]
+    public async Task<string> GetWeatherAlerts(
+        [Description("The city name (e.g., 'London')")] string city,
+        [Description("Optional country code (e.g., 'GB')")] string? countryCode = null,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(city))
+            return "City name must be provided.";
+
+        logger.LogDebug("Calling GetWeatherAlerts for city {City}, country {Country}", city, countryCode);
+        try
+        {
+            var description = await weatherService.GetWeatherAlertsDescription(city, countryCode, ct);
+            return $"Weather alerts for {city}{(countryCode is not null ? $", {countryCode}" : "")}:\n{description}";
+        }
+        catch (ArgumentException ex)
+        {
+            logger.LogWarning(ex, "Invalid argument for GetWeatherAlerts: {Message}", ex.Message);
+            return ex.Message;
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogWarning(ex, "API error for GetWeatherAlerts: {Message}", ex.Message);
+            return $"Could not retrieve weather alerts for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get weather alerts for {City}, {Country}", city, countryCode);
+            return $"Could not retrieve weather alerts for {city}{(countryCode is not null ? $", {countryCode}" : "")}. {ex.Message}";
+        }
     }
 }

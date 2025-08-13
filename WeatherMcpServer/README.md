@@ -1,75 +1,120 @@
-# MCP Server
+﻿# Real Weather Mcp Server 
 
-This README was created using the C# MCP server project template. It demonstrates how you can easily create an MCP server using C# and publish it as a NuGet package.
+This is a .NET 10 MCP Server that provides **real-time weather data** using [WeatherAPI.com](https://www.weatherapi.com/) via the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) standard.
 
-See [aka.ms/nuget/mcp/guide](https://aka.ms/nuget/mcp/guide) for the full guide.
+It was created as part of the FastMCP assignment and showcases full integration with the `.NET MCP Server` framework, weather tooling, structured responses, and rich test coverage.
 
-Please note that this template is currently in an early preview stage. If you have feedback, please take a [brief survey](http://aka.ms/dotnet-mcp-template-survey).
+## Prerequisites
 
-## Checklist before publishing to NuGet.org
-
-- Test the MCP server locally using the steps below.
-- Update the package metadata in the .csproj file, in particular the `<PackageId>`.
-- Update `.mcp/server.json` to declare your MCP server's inputs.
-  - See [configuring inputs](https://aka.ms/nuget/mcp/guide/configuring-inputs) for more details.
-- Pack the project using `dotnet pack`.
-
-The `bin/Release` directory will contain the package file (.nupkg), which can be [published to NuGet.org](https://learn.microsoft.com/nuget/nuget-org/publish-a-package).
-
-## Developing locally
-
-To test this MCP server from source code (locally) without using a built MCP server package, you can configure your IDE to run the project directly using `dotnet run`.
-
-```json
-{
-  "servers": {
-    "WeatherMcpServer": {
-      "type": "stdio",
-      "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "<PATH TO PROJECT DIRECTORY>"
-      ]
-    }
-  }
-}
-```
-
-## Testing the MCP Server
-
-Once configured, you can ask Copilot Chat for a random number, for example, `Give me 3 random numbers`. It should prompt you to use the `get_random_number` tool on the `WeatherMcpServer` MCP server and show you the results.
-
-## Publishing to NuGet.org
-
-1. Run `dotnet pack -c Release` to create the NuGet package
-2. Publish to NuGet.org with `dotnet nuget push bin/Release/*.nupkg --api-key <your-api-key> --source https://api.nuget.org/v3/index.json`
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0)
+- Free [openweathermap.org](https://openweathermap.org/) account
 
 ## Using the MCP Server from NuGet.org
 
-Once the MCP server package is published to NuGet.org, you can configure it in your preferred IDE. Both VS Code and Visual Studio use the `dnx` command to download and install the MCP server package from NuGet.org.
+Package name: [OKtol.WeatherMcpServer](https://www.nuget.org/packages/OKtol.WeatherMcpServer/)
 
-- **VS Code**: Create a `<WORKSPACE DIRECTORY>/.vscode/mcp.json` file
-- **Visual Studio**: Create a `<SOLUTION DIRECTORY>\.mcp.json` file
+1. Search for MCP server package on [NuGet.org](https://www.nuget.org/packages) and select [it](https://www.nuget.org/packages/OKtol.WeatherMcpServer/) from the list.
 
-For both VS Code and Visual Studio, the configuration file uses the following server definition:
+2. View the package details and copy the JSON from the "MCP Server" tab.
 
-```json
-{
-  "servers": {
-    "WeatherMcpServer": {
-      "type": "stdio",
-      "command": "dnx",
-      "args": [
-        "<your package ID here>",
-        "--version",
-        "<your package version here>",
-        "--yes"
-      ]
+3. Create a mcp configuration file.
+    - **VS Code**: `<WORKSPACE DIRECTORY>/.vscode/mcp.json`
+    - **Visual Studio**: `<SOLUTION DIRECTORY>\.mcp.json`
+
+    For both VS Code and Visual Studio, the configuration file uses the following server definition:
+
+4. In your mcp.json file in the .vscode folder, add the copied JSON, which looks like this:
+    ```json
+    {
+      "inputs": [
+        {
+          "type": "promptString",
+          "id": "openweather_api_key",
+          "description": "Api key from your https://api.openweathermap.org/ account.",
+          "password": true
+        }
+      ],
+      "servers": {
+        "OKtol.WeatherMcpServer": {
+          "type": "stdio",
+          "command": "dnx",
+          "args": ["OKtol.WeatherMcpServer@", "--yes"],
+          "env": {
+            "OpenWeatherOptions__BaseUrl": "https://api.openweathermap.org/",
+            "OpenWeatherOptions__ApiKey": "${input:openweather_api_key}"
+          }
+        }
+      }
     }
-  }
-}
-```
+    ```
+
+5. Save the file.
+
+6. Click `Restart` button in this file.
+
+7. In GitHub Copilot, select the Select tools icon to verify your `WeatherMcpServer` is available with the tools listed.
+
+## Using the MCP Server locally
+
+1.  Clone the repository:
+
+    ```bash
+    git clone <repository_url>
+    ```
+
+2.  Navigate to the project directory:
+
+    ```bash
+    cd dotnet-test-assignment/WeatherMcpServer
+    ```
+
+3.  Build the project:
+
+    ```bash
+    dotnet build
+    ```
+
+4. Configuration:
+
+    The API key must be provided via an environment variable:
+
+    ```bash
+    OpenWeatherOptions__ApiKey=your_actual_key_here
+    ```
+
+    You can either:
+
+    * Set it globally:
+      `export OpenWeatherOptions__ApiKey=...` (Linux/macOS)
+      `set OpenWeatherOptions__ApiKey=...` (Windows)
+
+    * **Or use `appsettings.json` locally(recommended):**
+
+    ```json
+    {
+      "OpenWeatherOptions": {
+        "ApiKey": "your_actual_key_here"
+      }
+    }
+    ```
+
+5. You can run the server manually:
+
+    ```bash
+    dotnet run --project WeatherMcpServer
+    ```
+
+    Or test it with [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
+
+    ```bash
+    npx @modelcontextprotocol/inspector
+    ```
+
+6. In GitHub Copilot, select the Select tools icon to verify your `WeatherMcpServer` is available with the tools listed.
+
+## Testing the MCP Server
+
+Once configured, you can ask Copilot Chat for a weather, for example, `What is the current weather in London? #get_current_weather`. It should prompt you to use the `GetCurrentWeather` tool on the `WeatherMcpServer` MCP server and show you the results.
 
 ## More information
 
@@ -83,3 +128,7 @@ Refer to the VS Code or Visual Studio documentation for more information on conf
 
 - [Use MCP servers in VS Code (Preview)](https://code.visualstudio.com/docs/copilot/chat/mcp-servers)
 - [Use MCP servers in Visual Studio (Preview)](https://learn.microsoft.com/visualstudio/ide/mcp-servers)
+
+👨‍💻 Author
+Built by OKtol 
+Repo: https://github.com/OKtol/dotnet-test-assignment
