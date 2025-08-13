@@ -6,24 +6,31 @@ namespace WeatherMcpServer.Presenters;
 
 public static class OpenWeatherPresenter
 {
-    private static readonly JsonSchema _geoSchema = JsonSchema.FromFile("Schemas/OpenWeather/geo-direct.json");
+    private static readonly JsonSchema? _geoSchema;
+
+    static OpenWeatherPresenter()
+    {
+        _geoSchema = JsonSchema.FromFile(Path.Combine(AppContext.BaseDirectory, "Schemas/OpenWeather/geo-direct.json"));
+    }
 
     public static GeoCoordinate GetGeoCoordinate(this JsonElement geoRoot)
     {
-        if (!_geoSchema.Evaluate(geoRoot).IsValid)
-            throw new ArgumentException("Invalid geo data format.");
-
-        if (geoRoot.GetArrayLength() == 0)
-            throw new ArgumentException("Location not found. Please check the city and country code.");
-
-        var latitude = geoRoot[0].GetProperty("lat").GetDouble();
-        var longitude = geoRoot[0].GetProperty("lon").GetDouble();
-
-        return new GeoCoordinate
+        if (_geoSchema!.Evaluate(geoRoot).IsValid)
         {
-            Latitude = latitude,
-            Longitude = longitude
-        }; 
+            if (geoRoot.GetArrayLength() == 0)
+                throw new ArgumentException("Location not found. Please check the city and country code.");
+
+            var latitude = geoRoot[0].GetProperty("lat").GetDouble();
+            var longitude = geoRoot[0].GetProperty("lon").GetDouble();
+
+            return new GeoCoordinate
+            {
+                Latitude = latitude,
+                Longitude = longitude
+            };
+        }
+
+        throw new ArgumentException("Invalid geo data format.");
     }
 
     public static string GetErrorMessage(this JsonElement content)
