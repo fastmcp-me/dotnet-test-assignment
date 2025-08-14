@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
+using WeatherMcpServer.Application.Abstractions;
+using WeatherMcpServer.Infrastructure.Cache;
 
 namespace IntegrationTests;
 
@@ -6,6 +9,7 @@ public abstract class TestBase : IDisposable
 {
     protected readonly IConfiguration _configuration;
     protected readonly HttpClient _httpClient;
+    protected readonly ICacheService _cacheService;
 
     protected TestBase()
     {
@@ -22,6 +26,9 @@ public abstract class TestBase : IDisposable
         {
             BaseAddress = new Uri(baseUriStr)
         };
+
+        _cacheService = new MemoryCacheService(new MemoryCache(new MemoryCacheOptions()));
+
     }
 
     public void Dispose()

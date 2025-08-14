@@ -13,8 +13,6 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-builder.Services.AddMemoryCache();
-
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication();

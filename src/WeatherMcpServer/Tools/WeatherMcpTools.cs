@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using System.ComponentModel;
 using WeatherMcpServer.Application;
+using WeatherMcpServer.Application.Abstractions;
 using WeatherMcpServer.Domain.LocationAggregate;
 using WeatherMcpServer.Infrastructure.Exceptions;
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WeatherMcpServer.Application.Abstractions;
 
 namespace WeatherMcpServer.Application;
 

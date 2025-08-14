@@ -1,6 +1,6 @@
 ﻿using WeatherMcpServer.Domain.LocationAggregate;
 
-namespace WeatherMcpServer.Application;
+namespace WeatherMcpServer.Application.Abstractions;
 
 public interface IWeatherService
 {

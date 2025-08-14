@@ -6,7 +6,7 @@ using WeatherMcpServer.Infrastructure.Exceptions;
 
 namespace WeatherMcpServer.Infrastructure.OpenWeather;
 
-public sealed class OpenWeatherProvider :
+internal sealed class OpenWeatherProvider :
     HttpProvider
     , IWeatherProvider
 {

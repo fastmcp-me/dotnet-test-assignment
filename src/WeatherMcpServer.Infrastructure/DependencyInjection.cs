@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WeatherMcpServer.Application.Abstractions;
 using WeatherMcpServer.Domain.LocationAggregate;
+using WeatherMcpServer.Infrastructure.Cache;
 using WeatherMcpServer.Infrastructure.OpenWeather;
 
 namespace WeatherMcpServer.Infrastructure;
@@ -9,6 +11,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddMemoryCache();
+
+        services.AddSingleton<ICacheService, MemoryCacheService>();
+
         var baseAddress = configuration["OpenWeather:BaseAddress"]
             ?? throw new ArgumentNullException("OpenWeather API key is missing in configuration.");
     

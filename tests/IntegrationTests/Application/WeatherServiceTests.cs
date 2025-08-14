@@ -22,7 +22,11 @@ public class WeatherServiceTests : TestBase
             _configuration,
             NullLogger<OpenWeatherProvider>.Instance);
 
-        var weatherService = new WeatherService(provider, NullLogger<WeatherService>.Instance, memoryCache);
+        var weatherService = new WeatherService(
+            provider,
+            _cacheService,
+            NullLogger<WeatherService>.Instance);
+
         var location = Location.Create("London", "GB");
         var numDays = 3;
 

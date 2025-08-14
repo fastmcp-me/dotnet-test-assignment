@@ -6,14 +6,24 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>IntegrationTests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0-preview.6.25358.103" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0-preview.6.25358.103" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WeatherMcpServer.Domain\WeatherMcpServer.Domain.csproj" />
+	  <InternalsVisibleTo Include="IntegrationTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WeatherMcpServer.Application\WeatherMcpServer.Application.csproj" />
   </ItemGroup>
 
 </Project>
